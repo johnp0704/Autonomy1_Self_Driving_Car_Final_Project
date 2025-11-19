@@ -18,7 +18,7 @@ class Car:
         F_min = -7000 #mg/s from brakes
         L = 2.7 #m
         delta_max = 0.05 #rad
-
+        step_size = 300 #steps per second
 
         # car states 
 
@@ -26,8 +26,8 @@ class Car:
 
     def update(self, F, delta, beta):
         # Saturate force and steering
-        self.F_sat = 
-        self.delta_sat = 
+        self.F_sat = np.clip(F, self.F_min, self.F_max)
+        self.delta_sat = np.clip(delta, -self.delta_max, self.delta_max)
 
         # Longitudinal dynamics (Euler)
         self.speed = 
