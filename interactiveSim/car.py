@@ -15,7 +15,7 @@ class Car:
         eta_g = 0.8
         eta_d = 3.8
         rw = 0.34 #𝑚
-        F_ =  200 #𝑚𝑔/𝑠
+        F_bar =  200 #𝑚𝑔/𝑠
         Te_max = 200 #Nm
         F_max = (Te_max * eta_g * eta_d) / rw * zeta #mg/s from engine (calculated)
         F_min = -7000 #mg/s from brakes
@@ -27,7 +27,7 @@ class Car:
 
         # car states 
         T_e = 0 #Nm
-        
+
         # outputs
 
     def update(self, F, delta, beta):
@@ -51,5 +51,5 @@ class Car:
 
         # Simple fuel model (unchanged)
         self.BSFC = ((self.N_e - 2700) / 12000)**2 + ((self.T_e - 150) / 600)**2 + 0.07
-        self.fuel_rate = 
-        self.total_fuel = 
+        self.fuel_rate = max(1/self.zeta * self.BSFC * F * self.speed, self.F_bar)
+        self.total_fuel += self.fuel_rate * self.Ts
