@@ -27,6 +27,7 @@ class Car:
 
         # car states 
         T_e = 0 #Nm
+        
         # outputs
 
     def update(self, F, delta, beta):
