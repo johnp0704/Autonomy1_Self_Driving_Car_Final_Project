@@ -14,6 +14,8 @@ class Car:
         eta_g = 3.8
         rw = 0.34 #𝑚
         F =  200 #𝑚𝑔/𝑠
+        F_max = ... #mg/s
+        F_min = ... #mg/s
         L = 2.7 #m
         delta_max = 0.05 #rad
 
