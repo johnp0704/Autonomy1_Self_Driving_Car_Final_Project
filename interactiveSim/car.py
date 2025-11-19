@@ -17,7 +17,7 @@ class Car:
         rw = 0.34 #𝑚
         F_bar =  200 #𝑚𝑔/𝑠
         Te_max = 200 #Nm
-        F_max = (Te_max * eta_g * eta_d) / rw * zeta #mg/s from engine (calculated)
+        F_max = (Te_max * eta_g * eta_d) / rw * zeta #mg/s from engine
         F_min = -7000 #mg/s from brakes
         L = 2.7 #m
         delta_max = 0.05 #rad
