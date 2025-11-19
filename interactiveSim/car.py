@@ -14,7 +14,7 @@ class Car:
         eta_g = 3.8
         rw = 0.34 #𝑚
         F =  200 #𝑚𝑔/𝑠
-        F_max = 1788.235 #mg/s from engine (calculated)
+        F_max = 1788.235/zeta #mg/s from engine (calculated)
         F_min = -7000 #mg/s from brakes
         L = 2.7 #m
         delta_max = 0.05 #rad
@@ -30,10 +30,10 @@ class Car:
         self.delta_sat = np.clip(delta, -self.delta_max, self.delta_max)
 
         # Longitudinal dynamics (Euler)
-        self.speed = 
-        
+        self.speed += self.speed_dot * self.Ts
+    
         # Yaw kinematics (bicycle model)
-        self.phi =
+        self.phi += self.phi_dot * self.Ts
 
         # Velocity components in world coordinates (m/s)
         self.vx = 
