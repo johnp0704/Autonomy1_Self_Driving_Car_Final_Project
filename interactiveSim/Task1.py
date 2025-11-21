@@ -9,14 +9,11 @@ x = np.arange(0, 6101, 1)                     # 6.1 km total
 beta = Amp * np.sin(2*np.pi/1000*x + 300)     # unit is degrees here! 
 beta[(x < 500) & (beta < 0)] = 0    # initial 500m is flat
 
-
-speed = np.linspace(1000, 5500, 300)
-T_e = np.linspace(1000, 5500, 300)
-eta_g = 0.8
-eta_d = 3.8
-rw = 0.34 #𝑚
-N_e = (60/(2*np.pi)) * (eta_g * eta_d * speed) / rw
+N_e = np.linspace(0, 5500, 300)
+T_e = np.linspace(0, 200, 300)
 T, N = np.meshgrid(N_e, T_e)
+T_max = 200 - 0.00008 * (N - 3000)**2
+T_max = np.clip(T_max, 0, None) 
 BSFC = ((N - 2700)/12000)**2 + ((T - 150)/600)**2 + 0.07
 
 
@@ -29,7 +26,7 @@ plt.plot(x, beta)
 plt.title("Task 1: Default Road Shape")
 plt.xlabel("Distance")
 plt.ylabel("Height")
-plt.savefig("figs/road_shape.png", dpi = 600)
+#plt.savefig("figs/road_shape.png", dpi = 600)
 plt.show()
 
 
@@ -37,8 +34,8 @@ plt.show()
 plt.figure(figsize=figsize)
 cont = plt.contour(T, N, BSFC, levels=40, cmap='viridis')
 plt.clabel(cont, inline=True, fontsize=8)
-plt.xlabel("Torque (Nm)")
-plt.ylabel("Engine Speed")
+plt.xlabel("Speed (rpm)")
+plt.ylabel("Torque (Nm)")
 plt.title("BSFC Contour Map")
 plt.colorbar(cont, label="BSFC")
 plt.show()
@@ -46,7 +43,7 @@ plt.show()
 #3D Surface Plot
 fig = plt.figure(figsize=figsize)
 ax = fig.add_subplot(111, projection='3d')
-surf = ax.plot_surface(T, N, BSFC, cmap='viridis', edgecolor='none')
+surf = ax.plot_surface(T, N, BSFC_masked, cmap='viridis', edgecolor='none')
 ax.set_xlabel("Torque (Nm)")
 ax.set_ylabel("Engine Speed")
 ax.set_zlabel("BSFC")
