@@ -11,14 +11,6 @@
             "request": "launch",
             "program": "${workspaceFolder}/interactiveSim/Task1.py",
             "console": "integratedTerminal"
-        },
-
-        {
-            "name": "Task 1",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${activeFolderLong}/interactiveSim/Task1.py",
-            "console": "integratedTerminal"
         }
     ]
 }

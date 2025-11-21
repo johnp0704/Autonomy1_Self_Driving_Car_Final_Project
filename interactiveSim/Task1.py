@@ -17,4 +17,6 @@ plt.plot(x, beta)
 plt.title("Task 1: Default Road Shape")
 plt.xlabel("Distance")
 plt.ylabel("Height")
-plt.savefig()
+plt.savefig("figs/road_shape.png", dpi = 600)
+
+
