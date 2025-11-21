@@ -13,10 +13,14 @@ beta = Amp * np.sin(2*np.pi/1000*x + 300)     # unit is degrees here!
 beta[(x < 500) & (beta < 0)] = 0    # initial 500m is flat
 
 N_e = np.linspace(1000, 5500, 300)
-T_e = np.linspace(0, 200, 300)
+T_e = np.linspace(0, 225, 300)
 N, T = np.meshgrid(N_e, T_e)
-T_max = 200 - 0.00008 * (N - 3000)**2
-T_max = np.clip(T_max, 0, None) 
+
+def tmax(N):
+    return np.where(N < 3250, 0.1 * N + 50, -0.1 * N + 700)
+
+T_max = tmax(N)
+T_max = np.clip(T_max, 0, 200)
 BSFC = ((N - 2700)/12000)**2 + ((T - 150)/600)**2 + 0.07
 BSFC_masked = np.ma.masked_where(T > T_max, BSFC)
 
