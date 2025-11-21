@@ -3,30 +3,30 @@ import numpy as np
 class Car:
     def __init__(self, Ts, initial_speed, mass=1300):
         # car parameters
-        Ts = Ts
-        speed = initial_speed #m/s
-        m = mass #𝐾𝑔
-        Froll = 100 #𝑁
-        a = 0.2 #𝑁𝑠^2/𝑚2
-        b = 20 #𝑁𝑠/𝑚
-        g = 9.8 #𝑚/𝑠^2
-        fd_min = -7000 #𝑁
-        zeta = 0.95
-        eta_g = 0.8
-        eta_d = 3.8
-        rw = 0.34 #𝑚
-        F_bar =  200 #𝑚𝑔/𝑠
-        Te_max = 200 #Nm
-        F_max = (Te_max * eta_g * eta_d) / rw * zeta #mg/s from engine
-        F_min = -7000 #mg/s from brakes
-        L = 2.7 #m
-        delta_max = 0.05 #rad
-        step_size = 300 #steps per second
+        self.Ts = Ts
+        self.speed = initial_speed #m/s
+        self.m = mass #𝐾𝑔
+        self.Froll = 100 #𝑁
+        self.a = 0.2 #𝑁𝑠^2/𝑚2
+        self.b = 20 #𝑁𝑠/𝑚
+        self.g = 9.8 #𝑚/𝑠^2
+        self.fd_min = -7000 #𝑁
+        self.zeta = 0.95
+        self.eta_g = 0.8
+        self.eta_d = 3.8
+        self.rw = 0.34 #𝑚
+        self.F_bar =  200 #𝑚𝑔/𝑠
+        self.Te_max = 200 #Nm
+        self.F_max = (self.Te_max * self.eta_g * self.eta_d) / self.rw * self.zeta #mg/s from engine
+        self.F_min = -7000 #mg/s from brakes
+        self.L = 2.7 #m
+        self.delta_max = 0.05 #rad
+        self.step_size = 300 #steps per second
 
-        N_e = (60/(2*np.pi)) * (eta_g * eta_d * speed) / rw
+        self.N_e = (60/(2*np.pi)) * (self.eta_g * self.eta_d * speed) / self.rw
 
         # car states 
-        T_e = 0 #Nm
+        self.T_e = 0 #Nm
 
         # outputs
 
