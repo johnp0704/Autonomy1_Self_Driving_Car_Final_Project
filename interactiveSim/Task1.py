@@ -1,6 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+import os
+
+FIGS_PATH = os.path.abspath("interactiveSim/figs")
 
 Amp = 3
 
@@ -22,14 +25,15 @@ BSFC = ((N - 2700)/12000)**2 + ((T - 150)/600)**2 + 0.07
 
 fig_ratio = 1.61803398875
 fig_height = 4
-figsize = (fig_height, fig_height * fig_ratio)
+figsize = (fig_height * fig_ratio, fig_height)
 
 plt.figure(figsize = figsize)
 plt.plot(x, beta)
 plt.title("Task 1: Default Road Shape")
 plt.xlabel("Distance")
 plt.ylabel("Height")
-plt.savefig("figs/road_shape.png", dpi = 600)
+fig_path = os.path.join(FIGS_PATH, "road_shape.png")
+plt.savefig(fig_path, dpi = 600)
 plt.show()
 
 
