@@ -9,13 +9,13 @@ x = np.arange(0, 6101, 1)                     # 6.1 km total
 beta = Amp * np.sin(2*np.pi/1000*x + 300)     # unit is degrees here! 
 beta[(x < 500) & (beta < 0)] = 0    # initial 500m is flat
 
-N_e = np.linspace(0, 5500, 300)
+N_e = np.linspace(1000, 5500, 300)
 T_e = np.linspace(0, 200, 300)
-T, N = np.meshgrid(N_e, T_e)
+N, T = np.meshgrid(N_e, T_e)
 T_max = 200 - 0.00008 * (N - 3000)**2
 T_max = np.clip(T_max, 0, None) 
 BSFC = ((N - 2700)/12000)**2 + ((T - 150)/600)**2 + 0.07
-
+BSFC_masked = np.ma.masked_where(T > T_max, BSFC)
 
 fig_ratio = 1.61803398875
 fig_height = 4
@@ -32,7 +32,8 @@ plt.show()
 
 #2D Contour Plot
 plt.figure(figsize=figsize)
-cont = plt.contour(T, N, BSFC, levels=40, cmap='viridis')
+cont = plt.contour(N, T, BSFC_masked, levels=40, cmap='viridis')
+cap = plt.plot(N, T_max, 'r--', label='Torque Limit')
 plt.clabel(cont, inline=True, fontsize=8)
 plt.xlabel("Speed (rpm)")
 plt.ylabel("Torque (Nm)")
