@@ -1,0 +1,24 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+    
+        {
+            "name": "Task 1",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/interactiveSim/Task1.py",
+            "console": "integratedTerminal"
+        },
+
+        {
+            "name": "Task 1",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${activeFolderLong}/interactiveSim/Task1.py",
+            "console": "integratedTerminal"
+        }
+    ]
+}
