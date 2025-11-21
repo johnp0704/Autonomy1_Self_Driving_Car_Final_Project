@@ -37,7 +37,7 @@ plt.show()
 #2D Contour Plot
 plt.figure(figsize=figsize)
 cont = plt.contour(N, T, BSFC_masked, levels=40, cmap='viridis')
-cap = plt.plot(N, T_max, 'r--', label='Torque Limit')
+plt.plot(N_e, T_max[0, :], 'r', linewidth=2, label='Torque Limit')
 plt.clabel(cont, inline=True, fontsize=8)
 plt.xlabel("Speed (rpm)")
 plt.ylabel("Torque (Nm)")
