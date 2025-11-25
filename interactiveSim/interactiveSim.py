@@ -381,7 +381,7 @@ while running:
 
         # Telemetry (≤ 60 s)
         if sim_t <= 60.0:
-            telemetry.append([sim_t, car.speed, car.y, Fd, delta_cmd, car.phi, car.total_fuel, traffic.min_distance])
+            telemetry.append([sim_t, car.speed, car.y, Fd, delta_cmd, car.phi, car.total_fuel_used, traffic.min_distance])
 
     # Draw
     screen.fill(cfg.BG_BLUE)
@@ -408,7 +408,7 @@ while running:
     # HUD
     fps = clock.get_fps()
     hud = font.render(
-        f"FPS: {fps:4.1f}, Vdes: {user_speed:5.1f} m/s, Fuel: {car.total_fuel/1000:3.0f} g, t: {sim_t:3.0f} s, min dist: {traffic.min_distance:5.1f} m",
+        f"FPS: {fps:4.1f}, Vdes: {user_speed:5.1f} m/s, Fuel: {car.total_fuel_used/1000:3.0f} g, t: {sim_t:3.0f} s, min dist: {traffic.min_distance:5.1f} m",
         True, cfg.PALE
     )
     screen.blit(hud, (12, cfg.H - 28))

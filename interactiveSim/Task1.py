@@ -3,6 +3,34 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import os
 
+#Consts
+m = 1300
+Froll = 100 #𝑁
+a = 0.2 #𝑁𝑠^2/𝑚2
+b = 20 #𝑁𝑠/𝑚
+g = 9.8 #𝑚/𝑠^2
+fd_min = -7000 #𝑁
+zeta = 0.95
+eta_g = 0.8
+eta_d = 3.8
+rw = 0.34 #𝑚
+F_bar =  200 #𝑚𝑔/𝑠
+Te_max = 200 #Nm
+F_max = (Te_max * eta_g * eta_d) / rw * zeta #mg/s from engine
+F_min = -7000 #mg/s from brakes
+L = 2.7 #m
+delta_max = 0.05 #rad
+step_size = 300 #steps per second
+sim_length = 150 # s
+
+v0 = 27.78
+#End Consts
+
+
+
+
+
+
 FIGS_PATH = os.path.abspath("interactiveSim/figs")
 
 Amp = 3
@@ -66,3 +94,11 @@ fig.colorbar(surf, ax=ax, shrink=0.6)
 fig_path = os.path.join(FIGS_PATH, "BSFC_3d.png")
 plt.savefig(fig_path, dpi = 600)
 plt.show()
+
+
+def F_d_ss(v, beta):
+    return m*g*np.sin(beta) + Froll + a*v**2 + b*v
+
+print(f"F_d_ss = {F_d_ss(v0, 0)}")
+
+#
