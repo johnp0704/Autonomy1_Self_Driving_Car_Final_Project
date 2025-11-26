@@ -25,50 +25,84 @@ F_max = (Te_max * eta_g * eta_d) / rw * zeta #mg/s from engine
 F_min = -7000 #mg/s from brakes
 L = 2.7 #m
 delta_max = 0.05 #rad
-step_size = 300 #steps per second
+
 sim_length = 150 # s
-
-v0 = 27.78
-
-print(f"C = {(a*v0**2 + b*v0)/v0}")
+v0_60 = 27.78
 
 
 def F_d_ss(v, beta):
     return m*g*np.sin(beta) + Froll + a*v**2 + b*v
 
-eq_input = F_d_ss(v0, 0)
+def plot_lin_analisis(v0 = 27.78, step_size = 300):
+    t = np.arange(0, step_size * sim_length +1, 1)
 
-print(f"F_d_ss = {eq_input}")
+    # Find C and D
+    # c = (a*v0**2 + b*v0)/v0
+    d = a*v0**2 + b*v0
+
+    c = 2*a*v0 + b
+
+    print(f"c_0 = {c}, d_0 = {d}")
+
+    eq_input = F_d_ss(v0, 0)
+
+    print(f"F_d_ss = {eq_input}")
+
+    # Create input sequence
+    step_start_time = 50 #s
+    F_d_in = t * 0 + eq_input
+    F_d_in[step_start_time*step_size+1:-1] = eq_input + 1
+    F_d_in[-1] = eq_input + 1
+
+    car1 = car.Car(1/step_size, 27.78)
+    plt.show()
+
+    vel_nonlin_sim_out = np.zeros(len(t))
+    vel_lin_sim_out = np.zeros(len(t))
+
+    nonlin_speed = v0
+    lin_speed = v0
+    for i,val in enumerate(t):
+        # car1.update(F_d_in[i], 0, 0)
+        # vel_nonlin_sim_out[i] = car1.speed
+        # # if i%100 == 0:
+        # #     print(car1.speed)0
+        F_c = 0 # no grade
+        F_sat = F_d_in[i]
 
 
-Amp = 0
-x = np.arange(0, 6101, 1)                     # 6.1 km total 
-beta = Amp * np.sin(2*np.pi/1000*x + 300)     # unit is degrees here! 
-beta[(x < 500) & (beta < 0)] = 0    # initial 500m is flat
+        #Non lin sim
+        F_air_nonlin = a*nonlin_speed**2 + b*nonlin_speed
+        # Sum of forces 
+        F_t_nonlin = F_sat - F_air_nonlin - F_c - Froll
+        # Longitudinal dynamics (Euler)
+        nonlin_speed += 1/step_size * F_t_nonlin/m
+        vel_nonlin_sim_out[i] = nonlin_speed
 
-t = np.arange(0, step_size * sim_length +1, 1)
+
+        # Linear sim
+        # Forces acting on the car based on speed and road grade
+        # F_air = c * lin_speed
+        F_air = c * (lin_speed-v0) + d
+        # Sum of forces 
+        F_t = F_sat - F_air - F_c - Froll
+
+        lin_speed += 1/step_size * F_t/m
+
+        vel_lin_sim_out[i] = lin_speed
 
 
+    plt.figure()
+    plt.plot(t/step_size, vel_nonlin_sim_out-v0)
+    plt.plot(t/step_size, vel_lin_sim_out-v0)
 
-# Create input sequence
-step_start_time = 50 #s
-F_d_in = t * 0 + eq_input
-F_d_in[step_start_time*step_size+1:-1] = eq_input + 1
-F_d_in[-1] = eq_input + 1
+    plt.legend(["Nonlinear", "Linear"])
 
-car1 = car.Car(1/step_size, 27.78)
-plt.show()
+    plt.title(f"Step Responces")
 
-vel_nonlin_sim_out = np.zeros(len(t))
-vel_lin_sim_out = np.zeros(len(t))
-for i,val in enumerate(t):
-    car1.update(F_d_in[i], 0, 0)
-    vel_nonlin_sim_out[i] = car1.speed
-    # if i%100 == 0:
-    #     print(car1.speed)
+    plt.show()
 
-plt.plot(t, vel_nonlin_sim_out)
-# plt.plot(t,F_d_in)
 
-print()
-plt.show()
+# plot_lin_analisis(step_size=600)
+
+plot_lin_analisis(step_size=300)
