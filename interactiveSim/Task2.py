@@ -4,9 +4,12 @@ import os
 from car import car
 import control as ct
 
-FIGS_PATH = os.path.abspath("interactiveSim/figs")
-
 #from task 1
+FIGS_PATH = os.path.abspath("interactiveSim/figs")
+fig_ratio = 1.61803398875
+fig_height = 4
+figsize = (fig_height * fig_ratio, fig_height)
+
 
 Ts = 1/300
 m = 1300
@@ -26,9 +29,9 @@ F_min = -7000 #mg/s from brakes
 L = 2.7 #m
 delta_max = 0.05 #rad
 
- # s
-v0_60 = 27.78
 
+v0_100 = 27.78 # KM/H
+v0_150 = 150 * v0_100/100 #KM/H
 
 
 
@@ -80,19 +83,26 @@ def plot_lin_analisis(v0 = 27.78, step_size = 1, sim_length = 150, step_time = 5
 
 
 
-    plt.figure()
-    plt.plot(t, vel_nonlin_sim_out-v0)
-    plt.plot(t, step_res_linaprox * step_size, "--")
+    plt.figure(figsize=figsize)
+    plt.plot(t, vel_nonlin_sim_out)
+    plt.plot(t, step_res_linaprox * step_size + v0, "--")
 
     plt.legend(["Nonlinear", "Linear"])
 
-    plt.title(f"Step Responses: Step Size = {step_size}")
+    plt.title(f"Step Responses: Step Size = {step_size} (N), V0 = {round(v0,2)} (m/s)")
 
     plt.xlabel("Time (s)")
     plt.ylabel("Delta V (m/s)")
+
+    fig_path = os.path.join(FIGS_PATH, f"t2_Linsim_step{step_size}_v0{round(v0)}.png")
+    plt.savefig(fig_path, dpi = 600)
 
     plt.show()
 
 plot_lin_analisis()
 
 plot_lin_analisis(step_size=600)
+
+plot_lin_analisis(v0 = v0_150)
+
+plot_lin_analisis(v0 = v0_150, step_size=600)
