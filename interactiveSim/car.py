@@ -36,6 +36,8 @@ class car:
 
         self.fd_min = -7000.0 #min force (N)
         self.delta_max = 0.05 #steering limit (rad)
+        self.vx = 0
+        self.vy = 0
 
 
     def get_road_grade(self):
