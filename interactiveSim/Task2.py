@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-import car
+from car import car
 import control as ct
 
 FIGS_PATH = os.path.abspath("interactiveSim/figs")
@@ -54,7 +54,7 @@ def plot_lin_analisis(v0 = 27.78, step_size = 300):
     F_d_in[step_start_time*step_size+1:-1] = eq_input + 1
     F_d_in[-1] = eq_input + 1
 
-    car1 = car.Car(1/step_size, 27.78)
+    car1 = car(1/step_size, 27.78)
     plt.show()
 
     vel_nonlin_sim_out = np.zeros(len(t))
