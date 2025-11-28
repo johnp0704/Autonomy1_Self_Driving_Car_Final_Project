@@ -211,7 +211,7 @@ plt.show()
 car_2 = car(Ts=1.0/step_size, initial_speed=27.78)
 
 sim_x = np.arange(0, 6101, 1)
-sim_beta_deg = 3 * np.sin(2*np.pi/1000*sim_x + 300)
+sim_beta_deg = Amp * np.sin(2*np.pi/1000*sim_x + 300)
 sim_beta_deg[(sim_x < 500) & (sim_beta_deg < 0)] = 0 #flatten
 sim_beta_rad = np.deg2rad(sim_beta_deg)
 
