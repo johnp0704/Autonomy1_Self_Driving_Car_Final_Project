@@ -1,7 +1,7 @@
 import numpy as np
 
 class Car:
-    def __init__(self, Ts, initial_speed, mass=1300):
+    def __init__(self, Ts = 1/300, initial_speed = 27.78, mass=1300):
         # car parameters
         self.Ts = Ts
         self.speed = initial_speed #m/s
@@ -56,8 +56,8 @@ class Car:
         # Longitudinal dynamics (Euler)
         self.speed += self.Ts * F_t/self.m
         # Velocity components in world coordinates (m/s)
-        self.vx += self.Ts * self.speed * np.cos(self.phi) # speed in direction of road
-        self.vy += self.Ts * self.speed * np.sin(self.phi) # Speed left and right
+        self.vx += self.speed * np.cos(self.phi) # speed in direction of road
+        self.vy += self.speed * np.sin(self.phi) # Speed left and right
 
         
 

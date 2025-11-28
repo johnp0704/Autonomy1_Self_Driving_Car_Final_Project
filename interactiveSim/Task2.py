@@ -8,7 +8,7 @@ FIGS_PATH = os.path.abspath("interactiveSim/figs")
 
 #from task 1
 
-
+Ts = 1/300
 m = 1300
 Froll = 100 #𝑁
 a = 0.2 #𝑁𝑠^2/𝑚2
@@ -26,43 +26,42 @@ F_min = -7000 #mg/s from brakes
 L = 2.7 #m
 delta_max = 0.05 #rad
 
-sim_length = 150 # s
+ # s
 v0_60 = 27.78
+
+
+
 
 
 def F_d_ss(v, beta):
     return m*g*np.sin(beta) + Froll + a*v**2 + b*v
 
-def plot_lin_analisis(v0 = 27.78, step_size = 300):
-    t = np.arange(0, step_size * sim_length +1, 1)
+def plot_lin_analisis(v0 = 27.78, step_size = 1, sim_length = 150, step_time = 50):
 
-    # Find C and D
-    # c = (a*v0**2 + b*v0)/v0
-    d = a*v0**2 + b*v0
-
+    t = np.arange(0, sim_length + Ts, Ts)
+    
+    # define plant
     c = 2*a*v0 + b
+    plant = ct.tf(1,(m,c))
 
-    print(f"c_0 = {c}, d_0 = {d}")
+    # Run Linear Sim
+    _, step_res_linaprox = ct.step_response(plant, T = t[int(round(step_time/Ts)):])
+    step_res_linaprox = np.concatenate((np.zeros((int(round(step_time/Ts)))), step_res_linaprox))
 
-    eq_input = F_d_ss(v0, 0)
 
-    print(f"F_d_ss = {eq_input}")
+
+    # Non lim sim
+    eq_input = F_d_ss(v0,0)
+
 
     # Create input sequence
-    step_start_time = 50 #s
     F_d_in = t * 0 + eq_input
-    F_d_in[step_start_time*step_size+1:-1] = eq_input + 1
-    F_d_in[-1] = eq_input + 1
-
-    car1 = car.Car(1/step_size, 27.78)
-    plt.show()
+    F_d_in[int(round(step_time/Ts)):] = eq_input + step_size
 
     vel_nonlin_sim_out = np.zeros(len(t))
-    vel_lin_sim_out = np.zeros(len(t))
-
     nonlin_speed = v0
-    lin_speed = v0
-    for i,val in enumerate(t):
+
+    for i,_ in enumerate(t):
         # car1.update(F_d_in[i], 0, 0)
         # vel_nonlin_sim_out[i] = car1.speed
         # # if i%100 == 0:
@@ -76,33 +75,24 @@ def plot_lin_analisis(v0 = 27.78, step_size = 300):
         # Sum of forces 
         F_t_nonlin = F_sat - F_air_nonlin - F_c - Froll
         # Longitudinal dynamics (Euler)
-        nonlin_speed += 1/step_size * F_t_nonlin/m
+        nonlin_speed += Ts * F_t_nonlin/m
         vel_nonlin_sim_out[i] = nonlin_speed
 
 
-        # Linear sim
-        # Forces acting on the car based on speed and road grade
-        # F_air = c * lin_speed
-        F_air = c * (lin_speed-v0) + d
-        # Sum of forces 
-        F_t = F_sat - F_air - F_c - Froll
-
-        lin_speed += 1/step_size * F_t/m
-
-        vel_lin_sim_out[i] = lin_speed
-
 
     plt.figure()
-    plt.plot(t/step_size, vel_nonlin_sim_out-v0)
-    plt.plot(t/step_size, vel_lin_sim_out-v0)
+    plt.plot(t, vel_nonlin_sim_out-v0)
+    plt.plot(t, step_res_linaprox * step_size, "--")
 
     plt.legend(["Nonlinear", "Linear"])
 
-    plt.title(f"Step Responces")
+    plt.title(f"Step Responses: Step Size = {step_size}")
+
+    plt.xlabel("Time (s)")
+    plt.ylabel("Delta V (m/s)")
 
     plt.show()
 
+plot_lin_analisis()
 
-# plot_lin_analisis(step_size=600)
-
-plot_lin_analisis(step_size=300)
+plot_lin_analisis(step_size=600)
