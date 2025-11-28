@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-import car
+from car import car
 import control as ct
 
 FIGS_PATH = os.path.abspath("interactiveSim/figs")
