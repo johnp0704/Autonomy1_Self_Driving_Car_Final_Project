@@ -1,8 +1,5 @@
 import numpy as np
 
-class Car:
-    def __init__(self, Ts = 1/300, initial_speed = 27.78, mass=1300):
-        # car parameters
 class car:
     #consts
     m = 1300.0
