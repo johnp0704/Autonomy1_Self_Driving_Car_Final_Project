@@ -17,4 +17,4 @@ C_total = C * Kpre;
 
 %% Open PID Tuner with your PI controller structure
 % PID Tuner supports PID/PI/PIDF, so we pass 'pi'.
-pidTuner(P, C, 'pi');
+pidTuner(P, C);
