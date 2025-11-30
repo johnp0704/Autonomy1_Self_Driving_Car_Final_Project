@@ -24,8 +24,8 @@ class controller_t2:
         v0 = 27.78
         a = 0.2
         b = 20
-
-        F_drag = a * v0**2 + b * v0
+        F_roll = 100
+        F_drag = F_roll + a * v0**2 + b * v0
         #insantiate controller
         self.PI = PID(Kp=Kp, Ki=Ki, Ts=Ts, umax=umax, umin=umin, Kaw=Kaw, initialState=F_drag)
         self.precomp = Precompensator(Kp=Kp, Ki=Ki, Ts=Ts, initial_v_ref=v0)

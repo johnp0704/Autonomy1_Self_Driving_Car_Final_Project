@@ -112,8 +112,6 @@ SIM_TIME = 150.0
 STEP_TIME = 50.0
 
 V_STEP = 101.0 / 3.6 #m/s
-umax = 10000
-umin = -10000
 
 def simulate_step_response(Kp, Ki, Kaw, v_start, v_target, plot_title, filename, road_amp=0.0):
     
@@ -123,7 +121,7 @@ def simulate_step_response(Kp, Ki, Kaw, v_start, v_target, plot_title, filename,
     car.road_beta = np.deg2rad(car.road_beta_deg)
 
     #defaults are set appropriately for designed controller of this specific task
-    cruise_controller = controller(Kp=Kp, Ki=Ki, Ts=Ts, umax=umax, umin=umin, Kaw=Kaw)
+    cruise_controller = controller(Kp=Kp, Ki=Ki, Ts=Ts, umax=F_max, umin=F_min, Kaw=Kaw)
     
     # Instantiate car object
     my_car = car(Ts=Ts, initial_speed=v_start)
