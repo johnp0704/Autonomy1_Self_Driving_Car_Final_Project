@@ -26,7 +26,7 @@ speed_nl = np.zeros_like(t)
 for i in range(len(t) - 1):
     delta = steering_delta(t[i])
 
-    # update longitudinal dynamics
+    #update longitudinal dynamics
     v, _, _ = car_nl.update(Fd=0.0, delta=delta)
 
     speed_nl[i+1] = v
@@ -37,7 +37,7 @@ for i in range(len(t) - 1):
     phi_nl[i+1] = phi_nl[i] + dphi * dt
     y_nl[i+1] = y_nl[i] + dy * dt
 
-#Linearized simulation
+#linearized simulation
 phi_lin = np.zeros_like(t)
 y_lin = np.zeros_like(t)
 
