@@ -115,7 +115,7 @@ V_STEP = 101.0 / 3.6 #m/s
 umax = 10000
 umin = -10000
 
-def simulate_step_response(Kp, Ki, Kaw, v_start, v_target, plot_title_1, plot_title_2, filename, road_amp=0.0):
+def simulate_step_response(Kp, Ki, Kaw, v_start, v_target, plot_title, filename, road_amp=0.0):
     
     # Update car class road profile manually
     car.AMP = road_amp
@@ -154,27 +154,17 @@ def simulate_step_response(Kp, Ki, Kaw, v_start, v_target, plot_title_1, plot_ti
 
     #plotting
     if filename:
-        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 10))
 
-        # --- Subplot 1: Speed vs Time ---
-        ax1.plot(time_data, speed_data_kph, label='Actual Speed (v)')
-        ax1.plot(time_data, ref_data_kph, label='Desired Speed (vref)')
-        ax1.axvline(STEP_TIME, linestyle=':', label='Step Time')
-        ax1.set_title(plot_title_1)
-        ax1.set_xlabel('Time (s)')
-        ax1.set_ylabel('Speed (km/hr)')
-        ax1.legend()
-        ax1.grid(True)
-
-        # --- Subplot 2: Control Force vs Time ---
-        ax2.plot(time_data, force_data, label='Control Force (Fd)')
-        ax2.axhline(umax, color='r', linestyle='--', label='umax')
-        ax2.axhline(umin, color='r', linestyle='--', label='umin')
-        ax2.set_title(plot_title_2)
-        ax2.set_xlabel('Time (s)')
-        ax2.set_ylabel('Force (N)')
-        ax2.legend()
-        ax2.grid(True)
+        #Speed vs Time
+        plt.figure(figsize=figsize)
+        plt.plot(time_data, speed_data_kph, label='Actual Speed (v)')
+        plt.plot(time_data, ref_data_kph, label='Desired Speed (vref)')
+        plt.axvline(STEP_TIME, linestyle=':', label='Step Time')
+        plt.title(plot_title)
+        plt.xlabel('Time (s)')
+        plt.ylabel('Speed (km/hr)')
+        plt.legend()
+        plt.grid(True)
 
         plt.tight_layout()
         save_path = os.path.join(FIGS_PATH, filename)
@@ -193,33 +183,30 @@ if __name__ == "__main__":
     
     #run with no anti_windup, step of 1 km/hr
     simulate_step_response(Kp=Kp, Ki=Ki, Kaw=0.0, v_start=v0_100, v_target=101.0/3.6,
-        plot_title_1='Nonlinear Plant Step Response (1 km/hr step, No Anti-Windup)',
-        plot_title_2='Control Force Output (1 km/hr step, No Anti-Windup)',
+        plot_title='Nonlinear Plant Step Response (1 km/hr step, No Anti-Windup)',
         filename="Task2_Controller_Part3.png"
     )
 
     #rerun with new values
     simulate_step_response(Kp=Kp, Ki=Ki, Kaw=0.0, v_start=v0_100, v_target=150.0/3.6,
-        plot_title_1='Nonlinear Plant Step Response (50 km.hr step, No Anti-Windup)',
-        plot_title_2='Control Force Output (1 km/hr step, No Anti-Windup)',
+        plot_title='Nonlinear Plant Step Response (50 km.hr step, No Anti-Windup)',
         filename="Task2_Controller_Part4.png"
     )
 
     #rerun with anti_windup
     simulate_step_response(Kp=Kp, Ki=Ki, Kaw=1/Ts, v_start=v0_100, v_target=150.0/3.6,
-        plot_title_1='Nonlinear Plant Step Response (50 km.hr step, w/ Anti-Windup)',
-        plot_title_2='Control Force Output (1 km/hr step, w/ Anti-Windup)',
+        plot_title='Nonlinear Plant Step Response (50 km.hr step, w/ Anti-Windup)',
         filename="Task2_Controller_Part5.png"
     )
 
     #fuel consumption with road grade
     fuel_full = simulate_step_response(Kp=Kp, Ki=Ki, Kaw=1/Ts, v_start=v0_100, v_target=v0_100, # Constant speed
-        plot_title_1="", plot_title_2="", filename=None, #no plot needed
+        plot_title="", filename=None, #no plot needed
         road_amp=3.0)
     print(f"Total Fuel (Full Gains): {fuel_full:.2f} mg")
 
-    # Half Gains
+    #half Gains
     fuel_half = simulate_step_response(Kp=Kp/2, Ki=Ki/2, Kaw=1/Ts, v_start=v0_100, v_target=v0_100,
-        plot_title_1="", plot_title_2="", filename=None,
+        plot_title="", filename=None,
         road_amp=3.0)
     print(f"Total Fuel (Half Gains): {fuel_half:.2f} mg")

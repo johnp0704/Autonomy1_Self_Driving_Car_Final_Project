@@ -52,12 +52,12 @@ rt = t[t_90_id] - t[t_10_id]
 #settling time calculation
 upper = 1.02 * y_final #2% above
 lower = 0.98 * y_final #2% below
-outside_bounds = (y > upper) | (y < lower)
-if np.any(outside_bounds):
-    last_unsettled_id = np.where(outside_bounds)[0][-1]
-    settling_time = t[last_unsettled_id]
+outside = (y > upper) | (y < lower)
+if np.any(outside):
+    last_violation = np.where(outside)[0][-1]
+    settling_time = t[last_violation + 1] if last_violation < len(t)-1 else t[-1]
 else:
-    settlign_time = 0.0 #settled
+    settling_time = 0.0
 
 print(f'\nPerformance Metrics:')
 print(f'Final Value: {y_final:.4f} | (Req: 1 for step input)')
