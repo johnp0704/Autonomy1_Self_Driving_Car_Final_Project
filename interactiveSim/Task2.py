@@ -11,8 +11,9 @@ fig_height = 4
 figsize = (fig_height * fig_ratio, fig_height)
 
 
-Ts = 1/300
-m = 1300
+Tp = 1/300
+Ts = 1/60
+m = 1300 #kg
 Froll = 100 #𝑁
 a = 0.2 #𝑁𝑠^2/𝑚2
 b = 20 #𝑁𝑠/𝑚
@@ -32,8 +33,6 @@ delta_max = 0.05 #rad
 
 v0_100 = 27.78 # KM/H
 v0_150 = 150 * v0_100/100 #KM/H
-
-
 
 
 def F_d_ss(v, beta):
@@ -101,9 +100,115 @@ def plot_lin_analisis(v0 = 27.78, step_size = 1, sim_length = 150, step_time = 5
         plt.show()
 
 plot_lin_analisis()
-
 plot_lin_analisis(step_size=600)
-
 plot_lin_analisis(v0 = v0_150)
-
 plot_lin_analisis(v0 = v0_150, step_size=600)
+
+#==========Controller Simulations============
+from controller_task2 import controller_t2 as controller
+
+print(f'\n==========Beginning Simulations=========')
+
+SIM_TIME = 150.0
+STEP_TIME = 50.0
+
+V_STEP = 101.0 / 3.6 #m/s
+
+def simulate_step_response(Kp, Ki, Kaw, v_start, v_target, plot_title, filename, road_amp=0.0):
+    
+    # Update car class road profile manually
+    car.AMP = road_amp
+    car.road_beta_deg = car.AMP * np.sin(2*np.pi/1000*car.road_x + 300)
+    car.road_beta = np.deg2rad(car.road_beta_deg)
+
+    #defaults are set appropriately for designed controller of this specific task
+    cruise_controller = controller(Kp=Kp, Ki=Ki, Ts=Ts, umax=F_max, umin=F_min, Kaw=Kaw)
+    
+    # Instantiate car object
+    my_car = car(Ts=Ts, initial_speed=v_start)
+
+    time_data = np.arange(0, SIM_TIME, Ts)
+    speed_data = np.zeros_like(time_data)
+    ref_data = np.zeros_like(time_data)
+    force_data = np.zeros_like(time_data)
+    
+    current_speed = v_start
+
+    for i, t in enumerate(time_data):
+        desired_speed = v_start
+        if t >= STEP_TIME:
+            desired_speed = v_target
+        ref_data[i] = desired_speed
+
+        control_force = cruise_controller.update(current_speed, desired_speed)
+        force_data[i] = control_force
+
+        # Using car class update
+        current_speed, _, total_fuel = my_car.update(control_force, 0)
+        speed_data[i] = current_speed
+
+    #convert back to km/hr
+    speed_data_kph = speed_data * 3.6
+    ref_data_kph = ref_data * 3.6
+
+    #plotting
+    if filename:
+
+        #Speed vs Time
+        plt.figure(figsize=figsize)
+        plt.plot(time_data, speed_data_kph, label='Actual Speed (v)')
+        plt.plot(time_data, ref_data_kph, label='Desired Speed (vref)')
+        plt.axvline(STEP_TIME, linestyle=':', label='Step Time')
+        plt.title(plot_title)
+        plt.xlabel('Time (s)')
+        plt.ylabel('Speed (km/hr)')
+        plt.legend()
+        plt.grid(True)
+
+        plt.tight_layout()
+        save_path = os.path.join(FIGS_PATH, filename)
+        plt.savefig(save_path, dpi = 600)
+        plt.show()
+
+    return my_car.total_fuel_used_mg
+    
+
+#defined gains
+Kp = 4323.888
+Ki = 3647.3125
+Kp = Kp/2
+Ki = Ki/2
+
+
+
+if __name__ == "__main__":
+    
+    #run with no anti_windup, step of 1 km/hr
+    simulate_step_response(Kp=Kp, Ki=Ki, Kaw=0.0, v_start=v0_100, v_target=101.0/3.6,
+        plot_title='Nonlinear Plant Step Response (1 km/hr step, No Anti-Windup)',
+        filename="Task2_Controller_Part3.png"
+    )
+
+    #rerun with new values
+    simulate_step_response(Kp=Kp, Ki=Ki, Kaw=0.0, v_start=v0_100, v_target=150.0/3.6,
+        plot_title='Nonlinear Plant Step Response (50 km.hr step, No Anti-Windup)',
+        filename="Task2_Controller_Part4.png"
+    )
+
+    #rerun with anti_windup
+    simulate_step_response(Kp=Kp, Ki=Ki, Kaw=1/Ts, v_start=v0_100, v_target=150.0/3.6,
+        plot_title='Nonlinear Plant Step Response (50 km.hr step, w/ Anti-Windup)',
+        filename="Task2_Controller_Part5.png"
+    )
+
+    #fuel consumption with road grade
+    fuel_full = simulate_step_response(Kp=Kp, Ki=Ki, Kaw=1/Ts, v_start=v0_100, v_target=v0_100, # Constant speed
+        plot_title="", filename=None, #no plot needed
+        road_amp=3.0)
+    print(f"Total Fuel (Full Gains): {fuel_full:.2f} mg")
+
+    #half Gains
+    fuel_half = simulate_step_response(Kp=Kp/2, Ki=Ki/2, Kaw=1/Ts, v_start=v0_100, v_target=v0_100,
+        plot_title="", filename=None,
+        road_amp=3.0)
+    print(f"Total Fuel (Half Gains): {fuel_half:.2f} mg")

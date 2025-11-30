@@ -26,8 +26,6 @@ sim_length = 150 # s
 v0 = 27.78
 #End Consts
 
-
-
 #save figures
 FIGS_PATH = os.path.abspath("interactiveSim/figs")
 
