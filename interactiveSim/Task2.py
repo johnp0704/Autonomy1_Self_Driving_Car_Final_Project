@@ -175,6 +175,9 @@ def simulate_step_response(Kp, Ki, Kaw, v_start, v_target, plot_title, filename,
 #defined gains
 Kp = 4323.888
 Ki = 3647.3125
+Kp = Kp/2
+Ki = Ki/2
+
 
 
 if __name__ == "__main__":
