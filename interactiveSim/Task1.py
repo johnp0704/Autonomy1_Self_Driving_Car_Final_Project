@@ -65,7 +65,8 @@ plt.ylabel("Height (m)")
 fig_path = os.path.join(FIGS_PATH, "road_shape.png")
 plt.savefig(fig_path, dpi = 600)
 plt.grid()
-plt.show()
+if __name__ == "__main__":
+    plt.show()
 
 
 #2D Contour Plot
@@ -80,7 +81,8 @@ plt.colorbar(cont, label="BSFC")
 fig_path = os.path.join(FIGS_PATH, "BSFC_contour.png")
 plt.savefig(fig_path, dpi = 600)
 plt.grid()
-plt.show()
+if __name__ == "__main__":
+    plt.show()
 
 #3D Surface Plot
 fig = plt.figure(figsize=figsize)
@@ -94,7 +96,8 @@ ax.set_title("BSFC Surface Plot")
 fig.colorbar(surf, ax=ax, shrink=0.6)
 fig_path = os.path.join(FIGS_PATH, "BSFC_3d.png")
 plt.savefig(fig_path, dpi = 600)
-plt.show()
+if __name__ == "__main__":
+    plt.show()
 
 #Fdss derivation
 def F_d_ss(v, beta):
@@ -129,7 +132,8 @@ ax.set_title("J_ss Surface Plot")
 fig.colorbar(surf, ax=ax, shrink=0.6)
 fig_path = os.path.join(FIGS_PATH, "Jss_3d.png")
 plt.savefig(fig_path, dpi = 600)
-plt.show()
+if __name__ == "__main__":
+    plt.show()
 
 
 #============Validation of model===============
@@ -205,7 +209,9 @@ plt.legend()
 
 fig_path = os.path.join(FIGS_PATH, "Validation_Sim_1_Flat_Road.png")
 plt.savefig(fig_path, dpi = 600)
-plt.show()
+
+if __name__ == "__main__":
+    plt.show()
 
 #====Sim 2, Amp=3=====
 car_2 = car(Ts=1.0/step_size, initial_speed=27.78)
@@ -241,4 +247,5 @@ plt.legend()
 
 fig_path = os.path.join(FIGS_PATH, "Validation_Sim_2_Hilly_Road.png")
 plt.savefig(fig_path, dpi = 600)
-plt.show()
+if __name__ == "__main__":
+    plt.show()

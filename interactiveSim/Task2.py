@@ -97,7 +97,8 @@ def plot_lin_analisis(v0 = 27.78, step_size = 1, sim_length = 150, step_time = 5
     fig_path = os.path.join(FIGS_PATH, f"t2_Linsim_step{step_size}_v0{round(v0)}.png")
     plt.savefig(fig_path, dpi = 600)
 
-    plt.show()
+    if __name__ == "__main__":
+        plt.show()
 
 plot_lin_analisis()
 
