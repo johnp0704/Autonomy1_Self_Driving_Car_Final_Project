@@ -100,3 +100,6 @@ fig_path = os.path.join(FIGS_PATH, 'Task3_Linearization_Errors')
 plt.savefig(fig_path, dpi = 600)
 plt.grid()
 plt.show()
+
+
+
