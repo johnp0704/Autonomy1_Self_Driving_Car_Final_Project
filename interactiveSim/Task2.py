@@ -125,7 +125,7 @@ def simulate_step_response(Kp, Ki, Kaw, v_start, v_target, plot_title, filename,
     cruise_controller = controller(Kp=Kp, Ki=Ki, Ts=Ts, umax=F_max, umin=F_min, Kaw=Kaw)
     
     # Instantiate car object
-    my_car = car(Ts=Ts, initial_speed=v_start)
+    car_task2 = car(Ts=Ts, initial_speed=v_start)
 
     time_data = np.arange(0, SIM_TIME, Ts)
     speed_data = np.zeros_like(time_data)
@@ -144,7 +144,7 @@ def simulate_step_response(Kp, Ki, Kaw, v_start, v_target, plot_title, filename,
         force_data[i] = control_force
 
         # Using car class update
-        current_speed, _, total_fuel = my_car.update(control_force, 0)
+        current_speed, _, total_fuel = car_task2.update(control_force, 0)
         speed_data[i] = current_speed
 
     #convert back to km/hr
@@ -170,7 +170,7 @@ def simulate_step_response(Kp, Ki, Kaw, v_start, v_target, plot_title, filename,
         plt.savefig(save_path, dpi = 600)
         plt.show()
 
-    return my_car.total_fuel_used_mg
+    return total_fuel
     
 
 #defined gains
