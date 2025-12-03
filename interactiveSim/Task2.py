@@ -145,7 +145,7 @@ def simulate_step_response(Kp, Ki, Kaw, v_start, v_target, plot_title, filename,
         force_data[i] = control_force
 
         # Using car class update
-        current_speed, _, total_fuel = car_task2.update(control_force, 0)
+        current_speed, _, total_fuel = car_task2.update(control_force, 0, 0)
         speed_data[i] = current_speed
 
     #convert back to km/hr
