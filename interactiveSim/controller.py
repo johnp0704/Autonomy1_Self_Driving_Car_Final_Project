@@ -1,6 +1,11 @@
 
 from PID import PID
 from car import Car
+import numpy as np
+from controller_task2 import controller_t2 as V_controller
+
+
+
 
 class Controller:
 
@@ -24,16 +29,9 @@ class Controller:
         # states/controller initialization go here
         self.pos = 0
 
-        self.v_controller = PID(
-            4323.888, #Kp
-            3647.3125, #Ki 
-            0, # Kd
-            1, # D term Filter
-            Ts, # Sample time 
-            self.Fd_cmd, 
-
-            # Max/min commands
-            self.F_d_max, self.F_d_min, 1)
+        self.v_controller = V_controller(Ts = Ts,
+                                         umin = self.F_d_min,
+                                         umax = self.F_d_max)
 
 
     # speed, y, phi: ego vehicle's speed, lateral position, heading
@@ -42,17 +40,16 @@ class Controller:
     # other_cars: each row of this list corresponds to one of the other vehicles on the road
     #             the columns are: [relative longitudinal position, relative lateral position, relative speed]
     # grade is a road grade object. Use grade.grade_at to find the road grade at any x
-    def update(self, speed, y, phi, desired_speed, des_lane, other_cars, grade):
+    def update(self, speed, x, y, phi, desired_speed, des_lane, other_cars, grade):
+        
+
         Ts = self.Ts
 
-        # Find where the car is
-        self.pos = speed * Ts
-
         self.desired_y = 0
-        self.vdes = self.speed # keep speed
+        self.vdes = desired_speed
 
         self.delta_cmd = 0
-        self.Fd_cmd = self.v_controller.update(self.vdes,speed)
+        self.Fd_cmd = self.v_controller.update(self.vdes, speed) #Delta V required
 
         
         return self.Fd_cmd, self.delta_cmd

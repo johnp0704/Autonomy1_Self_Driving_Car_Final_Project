@@ -361,7 +361,7 @@ while running:
         if keys[pygame.K_RIGHT]:  des_lane = min(des_lane + 1, 1)
         if keys[pygame.K_LEFT]:   des_lane = max(des_lane - 1,-1)
 
-        Fd, delta_cmd = controller.update(car.speed, car.y, car.phi, user_speed, des_lane, traffic.data, grade)
+        Fd, delta_cmd = controller.update(car.speed, car.x, car.y, car.phi, user_speed, des_lane, traffic.data, grade)
 
         # Grade and dynamics step
         beta = math.atan(grade.grade_at(car.x) / 100.0)  # radians
@@ -381,7 +381,7 @@ while running:
 
         # Telemetry (≤ 60 s)
         if sim_t <= 60.0:
-            telemetry.append([sim_t, car.speed, car.y, Fd, delta_cmd, car.phi, car.total_fuel_used, traffic.min_distance])
+            telemetry.append([sim_t, car.speed, car.y, Fd, delta_cmd, car.phi, car.total_fuel, traffic.min_distance])
 
     # Draw
     screen.fill(cfg.BG_BLUE)
@@ -408,7 +408,7 @@ while running:
     # HUD
     fps = clock.get_fps()
     hud = font.render(
-        f"FPS: {fps:4.1f}, Vdes: {user_speed:5.1f} m/s, Fuel: {car.total_fuel_used/1000:3.0f} g, t: {sim_t:3.0f} s, min dist: {traffic.min_distance:5.1f} m",
+        f"FPS: {fps:4.1f}, Vdes: {user_speed:5.1f} m/s, Fuel: {car.total_fuel/1000:3.0f} g, t: {sim_t:3.0f} s, min dist: {traffic.min_distance:5.1f} m",
         True, cfg.PALE
     )
     screen.blit(hud, (12, cfg.H - 28))

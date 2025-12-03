@@ -31,7 +31,7 @@ class Car:
         self.speed = initial_speed #m/s
         self.x = initial_position #longitudinal position (m)
         self.phi = 0.0 #yaw angle (rad)
-        self.total_fuel_used = 0.0 #total fuel consumed (mg)
+        self.total_fuel = 0.0 #total fuel consumed (mg)
         self.total_distance_m = 0.0 #total distance traveled (m)\
         self.fuel_rate = 0
 
@@ -86,7 +86,7 @@ class Car:
         self.fuel_rate = np.maximum((1/self.zeta) * BSFC * F_sat * self.speed, self.F_bar) # was fuel_rate_mg_per_s
         
         #update total fuel used
-        self.total_fuel_used += self.fuel_rate * Ts
+        self.total_fuel += self.fuel_rate * Ts
 
         #return values
-        return self.speed, self.x, self.total_fuel_used
+        return self.speed, self.x, self.total_fuel
