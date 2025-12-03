@@ -1,6 +1,6 @@
 import numpy as np
 
-class car:
+class Car:
     #consts
     m = 1300.0
     F_roll = 100.0 # N
@@ -31,13 +31,17 @@ class car:
         self.speed = initial_speed #m/s
         self.x = initial_position #longitudinal position (m)
         self.phi = 0.0 #yaw angle (rad)
-        self.total_fuel_used_mg = 0.0 #total fuel consumed (mg)
-        self.total_distance_m = 0.0 #total distance traveled (m)
+        self.total_fuel_used = 0.0 #total fuel consumed (mg)
+        self.total_distance_m = 0.0 #total distance traveled (m)\
+        self.fuel_rate = 0
 
         self.fd_min = -7000.0 #min force (N)
         self.delta_max = 0.05 #steering limit (rad)
         self.vx = 0
         self.vy = 0
+
+        self.y = 0
+        # self.x = 0
 
 
     def get_road_grade(self):
@@ -45,7 +49,7 @@ class car:
         beta_rad = np.interp(x_clamped, self.road_x, self.road_beta)
         return beta_rad
 
-    def update(self, Fd, delta):
+    def update(self, Fd, delta, beta):
         Ts = self.Ts
         
         #saturations
@@ -79,10 +83,10 @@ class car:
         T_e = (1/self.zeta) * (self.rw / (self.eta_g * self.eta_d)) * F_sat
         BSFC = ((N_e - 2700) / 12000)**2 + ((T_e - 150) / 600)**2 + 0.07
         
-        fuel_rate_mg_per_s = np.maximum((1/self.zeta) * BSFC * F_sat * self.speed, self.F_bar)
+        self.fuel_rate = np.maximum((1/self.zeta) * BSFC * F_sat * self.speed, self.F_bar) # was fuel_rate_mg_per_s
         
         #update total fuel used
-        self.total_fuel_used_mg += fuel_rate_mg_per_s * Ts
+        self.total_fuel_used += self.fuel_rate * Ts
 
         #return values
-        return self.speed, self.x, self.total_fuel_used_mg
+        return self.speed, self.x, self.total_fuel_used

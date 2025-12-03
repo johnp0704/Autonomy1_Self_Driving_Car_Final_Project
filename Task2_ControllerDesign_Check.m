@@ -9,6 +9,9 @@ Ki = 3647.3125;
 % PI controller
 C = Kp + Ki/s;
 
+zero(C)
+
+pole(C)
 %% Precompensator Ki / (Kp*s + Ki)
 Kpre = Ki / (Kp*s + Ki);
 

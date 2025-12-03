@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from car import car
+from car import Car
 import control as ct
 
 #from task 1
@@ -54,6 +54,7 @@ def plot_lin_analisis(v0 = 27.78, step_size = 1, sim_length = 150, step_time = 5
 
     # Non lim sim
     eq_input = F_d_ss(v0,0)
+    print(f"EQ input: {eq_input}N")
 
 
     # Create input sequence
@@ -117,15 +118,15 @@ V_STEP = 101.0 / 3.6 #m/s
 def simulate_step_response(Kp, Ki, Kaw, v_start, v_target, plot_title, filename, road_amp=0.0):
     
     # Update car class road profile manually
-    car.AMP = road_amp
-    car.road_beta_deg = car.AMP * np.sin(2*np.pi/1000*car.road_x + 300)
-    car.road_beta = np.deg2rad(car.road_beta_deg)
+    Car.AMP = road_amp
+    Car.road_beta_deg = Car.AMP * np.sin(2*np.pi/1000*Car.road_x + 300)
+    Car.road_beta = np.deg2rad(Car.road_beta_deg)
 
     #defaults are set appropriately for designed controller of this specific task
     cruise_controller = controller(Kp=Kp, Ki=Ki, Ts=Ts, umax=F_max, umin=F_min, Kaw=Kaw)
     
     # Instantiate car object
-    car_task2 = car(Ts=Ts, initial_speed=v_start)
+    car_task2 = Car(Ts=Ts, initial_speed=v_start)
 
     time_data = np.arange(0, SIM_TIME, Ts)
     speed_data = np.zeros_like(time_data)
