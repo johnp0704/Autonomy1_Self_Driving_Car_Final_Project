@@ -18,7 +18,7 @@ class Controller:
         self.Fd_cmd = initial_conditions[0]
         self.speed = initial_conditions[1]
 
-        self.F_d_min = 1698.82 # in N, Calculated in report
+        self.F_d_min = -7000.0 #min force (N) (Given)
         self.F_d_max = Car.F_max_force
         
         
@@ -31,7 +31,7 @@ class Controller:
 
         self.v_controller = V_controller(Ts = Ts,
                                          umin = self.F_d_min,
-                                         umax = self.F_d_max,)
+                                         umax = self.F_d_max)
 
 
     # speed, y, phi: ego vehicle's speed, lateral position, heading

@@ -20,6 +20,15 @@
             "request": "launch",
             "program": "${workspaceFolder}/interactiveSim/Task2.py",
             "console": "integratedTerminal"
+        },
+
+
+        {
+            "name": "Run Sim",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/interactiveSim/interactiveSim.py",
+            "console": "integratedTerminal"
         }
     ]
 }

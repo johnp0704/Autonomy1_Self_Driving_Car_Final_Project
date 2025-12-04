@@ -32,6 +32,6 @@ class controller_t2:
 
     def update(self, desired_speed, speed):
         V_ref_filtered = self.precomp.filter(desired_speed)
-        print(V_ref_filtered - speed)
+
         force = self.PI.update(V_ref_filtered, speed)
         return force
