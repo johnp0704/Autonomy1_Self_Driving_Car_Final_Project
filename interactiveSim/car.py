@@ -69,8 +69,8 @@ class Car:
         self.speed += accel * Ts
         self.speed = np.maximum(0.0, self.speed) #non-negative speed
         
-        self.vx += self.speed * np.cos(self.phi) # speed in direction of road
-        self.vy += self.speed * np.sin(self.phi) # Speed left and right
+        self.vx = self.speed * np.cos(self.phi) # speed in direction of road
+        self.vy = self.speed * np.sin(self.phi) # Speed left and right
 
         #position and distance updates
         if self.speed > 0:

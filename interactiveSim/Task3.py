@@ -101,5 +101,9 @@ plt.savefig(fig_path, dpi = 600)
 plt.grid()
 plt.show()
 
+# _____________________ SIM _______________________________-
+C_inner_Kp = 2
 
+C_outer_Kp = 0.2160
+C_outer_Ki = 0.3240
 

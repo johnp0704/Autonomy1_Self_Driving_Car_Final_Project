@@ -18,7 +18,7 @@ class Precompensator:
     
 class controller_t2:
 
-    def __init__(self, Kp=4323.888, Ki=3647.3125, Ts=1/60, umax=10000, umin=-10000, Kaw=60):
+    def __init__(self, Kp=4323.888, Ki=3647.3125, Ts=1/60, umax=10000, umin=-10000, Kaw=1):
         #Kaw = 1.0/Ts #standard value
 
         v0 = 27.78
@@ -30,7 +30,8 @@ class controller_t2:
         self.PI = PID(Kp=Kp, Ki=Ki, Ts=Ts, umax=umax, umin=umin, Kaw=Kaw, initialState=F_drag)
         self.precomp = Precompensator(Kp=Kp, Ki=Ki, Ts=Ts, initial_v_ref=v0)
 
-    def update(self, speed, desired_speed):
+    def update(self, desired_speed, speed):
         V_ref_filtered = self.precomp.filter(desired_speed)
+        print(V_ref_filtered - speed)
         force = self.PI.update(V_ref_filtered, speed)
         return force

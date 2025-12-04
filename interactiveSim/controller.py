@@ -31,7 +31,7 @@ class Controller:
 
         self.v_controller = V_controller(Ts = Ts,
                                          umin = self.F_d_min,
-                                         umax = self.F_d_max)
+                                         umax = self.F_d_max,)
 
 
     # speed, y, phi: ego vehicle's speed, lateral position, heading
@@ -41,7 +41,6 @@ class Controller:
     #             the columns are: [relative longitudinal position, relative lateral position, relative speed]
     # grade is a road grade object. Use grade.grade_at to find the road grade at any x
     def update(self, speed, x, y, phi, desired_speed, des_lane, other_cars, grade):
-        
 
         Ts = self.Ts
 
@@ -49,7 +48,6 @@ class Controller:
         self.vdes = desired_speed
 
         self.delta_cmd = 0
-        self.Fd_cmd = self.v_controller.update(self.vdes, speed) #Delta V required
+        self.Fd_cmd = self.v_controller.update(desired_speed, speed) 
 
-        
         return self.Fd_cmd, self.delta_cmd

@@ -35,9 +35,9 @@ P_outer = cltf_inner * P_y_from_psi;
 %% hand Calc 
 
 P_loc = 3;
-kp = 2*P_loc/v0;
+kp = 2*P_loc/v0
 
-ki = v0*kp^2/4;
+ki = v0*kp^2/4
 
 Controller_outer = (kp + ki/s)
 
