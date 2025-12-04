@@ -44,10 +44,6 @@ class Car:
         # self.x = 0
 
 
-    def get_road_grade(self):
-        x_clamped = np.clip(self.x, self.road_x[0], self.road_x[-1])
-        beta_rad = np.interp(x_clamped, self.road_x, self.road_beta)
-        return beta_rad
 
     def update(self, Fd, delta, beta):
         Ts = self.Ts
@@ -56,13 +52,11 @@ class Car:
         F_sat = np.clip(Fd, self.fd_min, self.F_max_force)
         delta_sat = np.clip(delta, -self.delta_max, self.delta_max)
         
-        #road grade
-        beta = self.get_road_grade()
-        
         #calculate forces
         F_air = self.a * self.speed**2 + self.b * self.speed
         F_gravity = self.m * self.g * np.sin(beta)
         F_t = F_sat - F_air - self.F_roll - F_gravity
+        
     
         #longitudinal dynamics
         accel = F_t / self.m

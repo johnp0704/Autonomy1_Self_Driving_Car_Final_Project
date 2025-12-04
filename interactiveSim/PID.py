@@ -42,5 +42,4 @@ class PID:
         # Store previous saturated command
         self.actuatorError_prev = self.output-command
 
-        print(f"PI: E:{error}, int in: {integratorInput}, int:{self.istate}")
         return self.output
