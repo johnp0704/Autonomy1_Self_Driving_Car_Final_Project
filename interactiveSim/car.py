@@ -40,6 +40,7 @@ class Car:
         self.vx = 0
         self.vy = 0
 
+        self.phi_dot = 0
         self.y = 0
         # self.x = 0
 
@@ -63,8 +64,17 @@ class Car:
         self.speed += accel * Ts
         self.speed = np.maximum(0.0, self.speed) #non-negative speed
         
+
+        #longitudinal dynamics
+        self.phi_dot += Ts * self.speed/self.L * np.arctan(delta)
+        self.phi += Ts * self.phi_dot
+
+
         self.vx = self.speed * np.cos(self.phi) # speed in direction of road
         self.vy = self.speed * np.sin(self.phi) # Speed left and right
+
+
+        self.y += Ts * self.vy
 
         #position and distance updates
         if self.speed > 0:

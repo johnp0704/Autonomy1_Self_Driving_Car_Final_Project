@@ -62,8 +62,8 @@ class Precompensator_t3:
 
 class Y_controller:
     def __init__(self, Ts=1/60,
-                 Kp_inner=2, delta_max=np.deg2rad(20), delta_min=-np.deg2rad(20),
-                 Kp_outer=0.2160, Ki_outer=0.3240, psi_max=np.deg2rad(20), psi_min=-np.deg2rad(20)):
+                 Kp_inner=2, delta_max=0.05, delta_min=-0.05,
+                 Kp_outer=0.2160, Ki_outer=0.3240, phi_max=np.deg2rad(20), phi_min=-np.deg2rad(20)):
         #Kaw = 1.0/Ts #standard value
 
         v0 = 27.78
@@ -72,8 +72,8 @@ class Y_controller:
         F_roll = 100
         F_drag = F_roll + a * v0**2 + b * v0
         #insantiate controller
-        self.c_inner = PID(Kp=Kp_inner, Ts=Ts, umax=delta_max, umin=delta_min, initialState=F_drag) # Detla Controller Psi des -> Delta
-        self.c_outer = PID(Kp=Kp_outer, Ki=Ki_outer, Ts=Ts, umax=psi_max, umin=psi_min, Kaw=1, initialState=F_drag) #Y controller Y-> psi_des
+        self.c_inner = PID(Kp=Kp_inner, Ts=Ts, umax=delta_max, umin=delta_min) # Detla Controller Psi des -> Delta
+        self.c_outer = PID(Kp=Kp_outer, Ki=Ki_outer, Ts=Ts, umax=phi_max, umin=phi_min, Kaw=1, initialState=F_drag) #Y controller Y-> psi_des
 
         self.precomp = Precompensator_t3() # Precomp
 
@@ -81,7 +81,8 @@ class Y_controller:
     def update(self, y_des, y, phi):
 
         y_filt = self.precomp.filter(y_des)
-        phi_des = self.c_outer.update(y_filt, y)
+        # phi_des = self.c_outer.update(y_filt, y)
+        phi_des = self.c_outer.update(y_des, y)
         delta = self.c_inner.update(phi_des, phi)
     
 
@@ -125,12 +126,15 @@ class Controller:
         
 
         Ts = self.Ts
-        print(des_lane)
+        
 
         self.desired_y = des_lane * 11.25 # dist from center to lane
+        print(y-self.desired_y)
+
         self.vdes = desired_speed
 
         self.delta_cmd = self.y_controller.update(self.desired_y, y, phi)
         self.Fd_cmd = self.v_controller.update(desired_speed, speed) 
 
         return self.Fd_cmd, self.delta_cmd
+    
