@@ -28,8 +28,6 @@ cltf_inner = feedback(oltf_inner,1);
 P_outer = cltf_inner * P_y_from_psi;
 
 
-% pidTuner(P_outer, "PI")
-% pidTuner(P_y_from_psi, "PI")
 
 
 %% hand Calc 
@@ -50,16 +48,5 @@ precomp = -precomp_loc/(s-precomp_loc)
 
 step(precomp*cltf_outer)
 
-%% Precomp
-% Controller_outer = (C_outer_2.Kp + C_outer_2.Ki/s);
-% 
-% cltf_outer = feedback(Controller_outer * P_outer, 1);
-% 
-% precomp_loc = zero(Controller_outer)
-% 
-% precomp = -precomp_loc/(s-precomp_loc)
-% 
-% 
-% step(precomp*cltf_outer)
 
 
