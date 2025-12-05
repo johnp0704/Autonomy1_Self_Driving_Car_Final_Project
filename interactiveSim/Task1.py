@@ -58,7 +58,7 @@ figsize = (fig_height * fig_ratio, fig_height)
 #Road profile plot
 plt.figure(figsize = figsize)
 plt.plot(x, beta)
-plt.title("Task 1: Default Road Shape")
+plt.title("Task 1: Road Profile (Amp=3) vs Horizontal Distance")
 plt.xlabel("Distance (m)")
 plt.ylabel("Height (m)")
 fig_path = os.path.join(FIGS_PATH, "road_shape.png")
@@ -119,7 +119,6 @@ beta = np.linspace(np.deg2rad(-2.5), np.deg2rad(2.5), 1000)
 V, B = np.meshgrid(v, beta)
 Jss_vals = J_ss(V, B)
 
-#Jss Surface Plot
 fig = plt.figure(figsize=figsize)
 ax = fig.add_subplot(111, projection='3d')
 surf = ax.plot_surface(V, B, Jss_vals, cmap='viridis', edgecolor='none')
@@ -131,8 +130,7 @@ ax.set_title("J_ss Surface Plot")
 fig.colorbar(surf, ax=ax, shrink=0.6)
 fig_path = os.path.join(FIGS_PATH, "Jss_3d.png")
 plt.savefig(fig_path, dpi = 600)
-if __name__ == "__main__":
-    plt.show()
+plt.show()
 
 
 #============Validation of model===============
@@ -152,7 +150,7 @@ def simulate(car_obj, Fd_func, duration=150, grade = None):
         Fd_input = Fd_func(t)
 
         # Interp for grade at x
-        grade_at_x = ... #TODO 
+        grade_at_x = 0 #TODO 
         speed, x_pos, fuel = car_obj.update(Fd=Fd_input, delta=0, beta=grade_at_x)
 
 
