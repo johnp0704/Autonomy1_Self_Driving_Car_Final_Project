@@ -5,7 +5,8 @@ from car import Car
 import control as ct
 
 #from task 1
-FIGS_PATH = os.path.abspath("interactiveSim/figs")
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+FIGS_PATH = os.path.join(SCRIPT_DIR, "figs")
 fig_ratio = 1.61803398875
 fig_height = 4
 figsize = (fig_height * fig_ratio, fig_height)

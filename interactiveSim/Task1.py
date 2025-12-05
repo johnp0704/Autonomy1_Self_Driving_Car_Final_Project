@@ -27,8 +27,8 @@ v0 = 27.78
 #End Consts
 
 #save figures
-SCRIPT_DIR = OS.PATH.DIRNAME(OS.PATH.ABSPATH(__file__))
-FIGS_PATH = os.path.abspath("interactiveSim/figs")
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+FIGS_PATH = os.path.join(SCRIPT_DIR, "figs")
 
 Amp = 3
 
@@ -153,7 +153,7 @@ def simulate(car_obj, Fd_func, duration=150, grade = None):
 
         # Interp for grade at x
         grade_at_x = ... #TODO 
-        speed, x_pos, fuel = car_obj.update(Fd_input, 0, grade_at_x)
+        speed, x_pos, fuel = car_obj.update(Fd=Fd_input, delta=0, beta=grade_at_x)
 
 
         if len(mpg_log) > 0: #skip if on first test
