@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from car import car
+from car import Car as car
 
 v0 = 27.78
 L = 2.7
@@ -27,7 +27,7 @@ for i in range(len(t) - 1):
     delta = steering_delta(t[i])
 
     #update longitudinal dynamics
-    v, _, _ = car_nl.update(Fd=0.0, delta=delta)
+    v, _, _ = car_nl.update(Fd=0.0, delta=delta, beta=0)
 
     speed_nl[i+1] = v
 
