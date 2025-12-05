@@ -135,10 +135,10 @@ if __name__ == "__main__":
 
 
 #============Validation of model===============
-from car import car
+from car import Car
 mpg_conversion = 1761.59 #calculated by hand
 
-def simulate(car_obj, Fd_func, duration=150):
+def simulate(car_obj, Fd_func, duration=150, grade = None):
     #time vector
     t_vec = np.arange(0, duration, car_obj.Ts)
 
@@ -149,8 +149,11 @@ def simulate(car_obj, Fd_func, duration=150):
 
     for t in t_vec:
         Fd_input = Fd_func(t)
-        speed, x_pos, fuel = car_obj.update(Fd_input, 0)
-        beta_val = car_obj.get_road_grade()
+
+        # Interp for grade at x
+        grade_at_x = ... #TODO 
+        speed, x_pos, fuel = car_obj.update(Fd_input, 0, grade_at_x)
+
 
         if len(mpg_log) > 0: #skip if on first test
             pass
@@ -174,7 +177,7 @@ def simulate(car_obj, Fd_func, duration=150):
     return t_log, v_log, mpg_log
 
 #====Sim 1, flat road=====
-car_1 = car(Ts=0.1/step_size, initial_speed=27.78)
+car_1 = Car(Ts=0.1/step_size, initial_speed=27.78)
 
 flat_beta = np.zeros_like(x)
 car_1.road_beta = np.deg2rad(flat_beta)
@@ -212,7 +215,7 @@ if __name__ == "__main__":
     plt.show()
 
 #====Sim 2, Amp=3=====
-car_2 = car(Ts=1.0/step_size, initial_speed=27.78)
+car_2 = Car(Ts=1.0/step_size, initial_speed=27.78)
 
 sim_x = np.arange(0, 6101, 1)
 sim_beta_deg = Amp * np.sin(2*np.pi/1000*sim_x + 300)
@@ -225,7 +228,7 @@ car_2.road_beta = sim_beta_rad
 def const_force(t):
     return F_eq_val
 
-t2, v2, mpg2 = simulate(car_2, const_force)
+t2, v2, mpg2 = simulate(car_2, const_force, grade=sim_beta_rad)
 
 #plot
 plt.figure(figsize=figsize)
