@@ -43,10 +43,13 @@ cltf_outer = feedback(Controller_outer * P_outer, 1);
 
 precomp_loc = zero(Controller_outer);
 
-precomp = -precomp_loc/(s-precomp_loc)
+precomp = -precomp_loc/(s-precomp_loc);
 
 
+%%
+figure
 step(precomp*cltf_outer)
 
 
-
+figure
+margin(Controller_outer * P_outer)

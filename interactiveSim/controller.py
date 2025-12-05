@@ -2,7 +2,7 @@
 from PID import PID
 from car import Car
 import numpy as np
-
+from scipy import signal
 
 # Task 2 controllers
 
@@ -63,17 +63,22 @@ class Precompensator_t3:
 class Y_controller:
     def __init__(self, Ts=1/60,
                  Kp_inner=2, delta_max=0.05, delta_min=-0.05,
-                 Kp_outer=0.2160, Ki_outer=0.3240, phi_max=np.deg2rad(20), phi_min=-np.deg2rad(20)):
+                #  Kp_outer=0.2160, Ki_outer=0.3240, phi_max=np.deg2rad(20), phi_min=-np.deg2rad(20)):
+                Kp_outer=0.2160, Ki_outer=0.1240, phi_max=np.deg2rad(20), phi_min=-np.deg2rad(20)):
         #Kaw = 1.0/Ts #standard value
+
+        # Caluclate Precomp Values:
+
+
 
         v0 = 27.78
         a = 0.2
         b = 20
         F_roll = 100
         F_drag = F_roll + a * v0**2 + b * v0
-        #insantiate controller
+        #init controller
         self.c_inner = PID(Kp=Kp_inner, Ts=Ts, umax=delta_max, umin=delta_min) # Detla Controller Psi des -> Delta
-        self.c_outer = PID(Kp=Kp_outer, Ki=Ki_outer, Ts=Ts, umax=phi_max, umin=phi_min, Kaw=1, initialState=F_drag) #Y controller Y-> psi_des
+        self.c_outer = PID(Kp=Kp_outer, Ki=Ki_outer, Ts=Ts, umax=phi_max, umin=phi_min, Kaw=5, initialState=F_drag) #Y controller Y-> psi_des
 
         self.precomp = Precompensator_t3() # Precomp
 
@@ -81,11 +86,11 @@ class Y_controller:
     def update(self, y_des, y, phi):
 
         y_filt = self.precomp.filter(y_des)
-        # phi_des = self.c_outer.update(y_filt, y)
-        phi_des = self.c_outer.update(y_des, y)
+        phi_des = self.c_outer.update(y_filt, y)
+        # phi_des = self.c_outer.update(y_des, y)
         delta = self.c_inner.update(phi_des, phi)
     
-
+        print(f"Y = {y}, y_filt = {y_filt}, e_f = {y_filt-y}, phi_des = {phi_des}, phi = {phi}")
         return delta
 
 
@@ -129,7 +134,7 @@ class Controller:
         
 
         self.desired_y = des_lane * 11.25 # dist from center to lane
-        print(y-self.desired_y)
+
 
         self.vdes = desired_speed
 
