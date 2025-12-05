@@ -138,7 +138,7 @@ class Controller:
 
         self.vdes = desired_speed
 
-        self.delta_cmd = self.y_controller.update(self.desired_y, y, phi)
+        self.delta_cmd = 0 #self.y_controller.update(self.desired_y, y, phi)
         self.Fd_cmd = self.v_controller.update(desired_speed, speed) 
 
         return self.Fd_cmd, self.delta_cmd

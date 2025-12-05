@@ -107,7 +107,7 @@ plot_lin_analisis(v0 = v0_150)
 plot_lin_analisis(v0 = v0_150, step_size=600)
 
 #==========Controller Simulations============
-from controller_task2 import controller_t2 as controller
+from controller import V_controller as controller
 
 print(f'\n==========Beginning Simulations=========')
 
@@ -142,7 +142,7 @@ def simulate_step_response(Kp, Ki, Kaw, v_start, v_target, plot_title, filename,
             desired_speed = v_target
         ref_data[i] = desired_speed
 
-        control_force = cruise_controller.update(current_speed, desired_speed)
+        control_force = cruise_controller.update(desired_speed, current_speed)
         force_data[i] = control_force
 
         # Using car class update
