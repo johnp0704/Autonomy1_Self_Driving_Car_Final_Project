@@ -135,6 +135,7 @@ def simulate_step_response(Kp, Ki, Kaw, v_start, v_target, plot_title, filename,
     force_data = np.zeros_like(time_data)
     
     current_speed = v_start
+    x_pos = 0
 
     for i, t in enumerate(time_data):
         desired_speed = v_start
@@ -146,7 +147,8 @@ def simulate_step_response(Kp, Ki, Kaw, v_start, v_target, plot_title, filename,
         force_data[i] = control_force
 
         # Using car class update
-        current_speed, _, total_fuel = car_task2.update(control_force, 0, 0)
+        grade_at_x = np.interp(x_pos, Car.road_x, Car.road_beta)
+        current_speed, x_pos, total_fuel = car_task2.update(control_force, 0, grade_at_x)
         speed_data[i] = current_speed
 
     #convert back to km/hr
@@ -178,8 +180,6 @@ def simulate_step_response(Kp, Ki, Kaw, v_start, v_target, plot_title, filename,
 #defined gains
 Kp = 4323.888
 Ki = 3647.3125
-Kp = Kp/2
-Ki = Ki/2
 
 
 
@@ -188,19 +188,22 @@ if __name__ == "__main__":
     #run with no anti_windup, step of 1 km/hr
     simulate_step_response(Kp=Kp, Ki=Ki, Kaw=0.0, v_start=v0_100, v_target=101.0/3.6,
         plot_title='Nonlinear Plant Step Response (1 km/hr step, No Anti-Windup)',
-        filename="Task2_Controller_Part3.png"
+        filename="Task2_Controller_Part3.png",
+        road_amp=0
     )
 
     #rerun with new values
     simulate_step_response(Kp=Kp, Ki=Ki, Kaw=0.0, v_start=v0_100, v_target=150.0/3.6,
         plot_title='Nonlinear Plant Step Response (50 km.hr step, No Anti-Windup)',
-        filename="Task2_Controller_Part4.png"
+        filename="Task2_Controller_Part4.png",
+        road_amp=0
     )
 
     #rerun with anti_windup
     simulate_step_response(Kp=Kp, Ki=Ki, Kaw=1/Ts, v_start=v0_100, v_target=150.0/3.6,
         plot_title='Nonlinear Plant Step Response (50 km.hr step, w/ Anti-Windup)',
-        filename="Task2_Controller_Part5.png"
+        filename="Task2_Controller_Part5.png",
+        road_amp=0
     )
 
     #fuel consumption with road grade
