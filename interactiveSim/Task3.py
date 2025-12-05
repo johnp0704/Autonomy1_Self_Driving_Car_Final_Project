@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from car import Car as car
+from car import Car
 
 v0 = 27.78
 L = 2.7
@@ -17,7 +17,7 @@ def steering_delta(time):
     return pulse_amp * (pulse_start <= time < pulse_end)
 
 #nonlinear simulation
-car_nl = car(Ts=dt, initial_speed=v0)
+car_nl = Car(Ts=dt, initial_speed=v0)
 
 phi_nl = np.zeros_like(t)
 y_nl = np.zeros_like(t)
