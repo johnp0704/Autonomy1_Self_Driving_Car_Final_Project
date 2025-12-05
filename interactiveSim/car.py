@@ -46,7 +46,7 @@ class Car:
 
 
 
-    def update(self, Fd, delta, beta):
+    def update(self, Fd, delta, beta=0):
         Ts = self.Ts
         
         #saturations

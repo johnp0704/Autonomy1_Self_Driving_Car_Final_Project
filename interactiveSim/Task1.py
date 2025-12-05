@@ -27,7 +27,8 @@ v0 = 27.78
 #End Consts
 
 #save figures
-FIGS_PATH = os.path.abspath("interactiveSim/figs")
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+FIGS_PATH = os.path.join(SCRIPT_DIR, "figs")
 
 Amp = 3
 
