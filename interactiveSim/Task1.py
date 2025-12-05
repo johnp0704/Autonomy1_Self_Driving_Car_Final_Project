@@ -137,7 +137,7 @@ plt.show()
 from car import Car
 mpg_conversion = 1761.59 #calculated by hand
 
-def simulate(car_obj, Fd_func, duration=150, grade = None):
+def simulate(car_obj, Fd_func, duration=150, grade = None, x = None):
     #time vector
     t_vec = np.arange(0, duration, car_obj.Ts)
 
@@ -145,13 +145,16 @@ def simulate(car_obj, Fd_func, duration=150, grade = None):
     v_log = []
     mpg_log = []
     t_log = []
+    x_pos = 0
 
     for t in t_vec:
         Fd_input = Fd_func(t)
-
+        grade_at_x = 0
         # Interp for grade at x
-        grade_at_x = 0 #TODO 
-        speed, x_pos, fuel = car_obj.update(Fd=Fd_input, delta=0, beta=grade_at_x)
+        if(x is not None):
+            grade_at_x = np.interp(x_pos, x, grade)
+            
+        speed, x_pos, fuel = car_obj.update(Fd_input, 0, grade_at_x)
 
 
         if len(mpg_log) > 0: #skip if on first test
@@ -221,13 +224,13 @@ sim_beta_deg = Amp * np.sin(2*np.pi/1000*sim_x + 300)
 sim_beta_deg[(sim_x < 500) & (sim_beta_deg < 0)] = 0 #flatten
 sim_beta_rad = np.deg2rad(sim_beta_deg)
 
-car_2.road_x = sim_x #match axis
-car_2.road_beta = sim_beta_rad
+# car_2.road_x = sim_x #match axis
+# car_2.road_beta = sim_beta_rad
 
 def const_force(t):
     return F_eq_val
 
-t2, v2, mpg2 = simulate(car_2, const_force, grade=sim_beta_rad)
+t2, v2, mpg2 = simulate(car_2, const_force, grade=sim_beta_rad, x = sim_x)
 
 #plot
 plt.figure(figsize=figsize)
