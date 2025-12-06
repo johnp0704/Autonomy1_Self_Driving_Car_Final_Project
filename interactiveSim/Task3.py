@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from car import Car
+from controller import Y_controller as controller
 
 v0 = 27.78
 L = 2.7
@@ -108,3 +109,97 @@ C_inner_Kp = 2
 C_outer_Kp = 0.2160
 C_outer_Ki = 0.3240
 
+road_grade = 0
+y_ref_list = [0.1, 20]
+
+car_lin = Car(Ts=dt, initial_speed=v0)
+
+#car parameters
+Tp = 1/300
+Ts = 1/60
+m = 1300 #kg
+Froll = 100 #𝑁
+a = 0.2 #𝑁𝑠^2/𝑚2
+b = 20 #𝑁𝑠/𝑚
+g = 9.8 #𝑚/𝑠^2
+fd_min = -7000 #𝑁
+zeta = 0.95
+eta_g = 0.8
+eta_d = 3.8
+rw = 0.34 #𝑚
+F_bar =  200 #𝑚𝑔/𝑠
+Te_max = 200 #Nm
+F_max = (Te_max * eta_g * eta_d) / rw * zeta #mg/s from engine
+F_min = -7000 #mg/s from brakes
+L = 2.7 #m
+delta_max = 0.05 #rad
+
+
+v0_100 = 27.78 # KM/H
+v0_150 = 150 * v0_100/100 #KM/H
+
+SIM_TIME = 150.0
+STEP_TIME = 2
+
+
+def simulate_step_response(y_start, y_target, plot_title, filename, road_amp=0.0):
+    
+    # Update car class road profile manually
+    Car.AMP = road_amp
+    Car.road_beta_deg = Car.AMP * np.sin(2*np.pi/1000*Car.road_x + 300)
+    Car.road_beta = np.deg2rad(Car.road_beta_deg)
+
+    #defaults are set appropriately for designed controller of this specific task
+    y_controller = controller(Ts=Ts)
+    
+    # Instantiate car object
+    car_task3 = Car(Ts=Ts, initial_speed=v0)
+
+    time_data = np.arange(0, SIM_TIME, Ts)
+    y_pos_data = np.zeros_like(time_data)
+    ref_data = np.zeros_like(time_data)
+    delta_list = np.zeros_like(time_data)
+    
+    car_task3.y = y_start
+
+    def F_d_ss(v, beta):
+        return m*g*np.sin(beta) + Froll + a*v**2 + b*v
+    
+    # stay at v0 for sim
+    control_force =  F_d_ss(v0, 0)
+
+    for i, t in enumerate(time_data):
+        desired_y = y_start
+        if t >= STEP_TIME:
+            desired_y = y_target
+        ref_data[i] = desired_y
+
+        delta, _ = y_controller.update(desired_y, car_task3.y, car_task3.phi)
+        delta_list[i] = delta
+
+        # Using car class update
+        car_task3.update(control_force, delta, 0)
+        y_pos_data[i] = car_task3.y
+    #plotting
+
+    if filename:
+
+        #Speed vs Time
+        plt.figure(figsize=figsize)
+        plt.plot(time_data, y_pos_data, label='Actual y Position (m)')
+        plt.plot(time_data, ref_data, label='Desired y Posiiton (yref)')
+        plt.axvline(STEP_TIME, linestyle=':', label='Step Time')
+        plt.title(plot_title)
+        plt.xlabel('Time (s)')
+        plt.ylabel('y Posiiton (m)')
+        plt.legend()
+        plt.grid(True)
+
+        plt.tight_layout()
+        save_path = os.path.join(FIGS_PATH, filename)
+        plt.savefig(save_path, dpi = 600)
+        plt.show()
+
+        
+for y_ref in y_ref_list:
+        simulate_step_response(y_start=0, y_target=y_ref, plot_title=f'Y Step Simulation (y_ref={y_ref})', filename=f"ystep_sim_yref_{int(y_ref)}.png", road_amp=0.0)

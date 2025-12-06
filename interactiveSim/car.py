@@ -66,7 +66,7 @@ class Car:
         
 
         #longitudinal dynamics
-        self.phi_dot += Ts * self.speed/self.L * np.arctan(delta)
+        self.phi_dot += Ts * self.speed/self.L * np.tan(delta_sat)
         self.phi += Ts * self.phi_dot
 
 

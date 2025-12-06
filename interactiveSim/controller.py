@@ -2,12 +2,12 @@
 from PID import PID
 from car import Car
 import numpy as np
-from scipy import signal
+
 
 # Task 2 controllers
 
-class Precompensator_t2:
-    def __init__(self, Kp, Ki, Ts, initial_v_ref):
+class Precompensator:
+    def __init__(self, Kp, Ki, Ts, initial_setpoint_ref):
         self.KP = Kp
         self.Ki = Ki
         self.Ts = Ts
@@ -15,10 +15,10 @@ class Precompensator_t2:
         denom = Kp + Ki * Ts
         self.alpha = (Ki * Ts) / denom
         self.beta = Kp / denom
-        self.Vf_prev = initial_v_ref
+        self.Vf_prev = initial_setpoint_ref
 
-    def filter(self, V_ref_current):
-        Vf_current = self.alpha * V_ref_current + self.beta * self.Vf_prev
+    def filter(self, Setpoint_ref_current):
+        Vf_current = self.alpha * Setpoint_ref_current + self.beta * self.Vf_prev
         self.Vf_prev = Vf_current
         return Vf_current
     
@@ -34,18 +34,19 @@ class V_controller:
         F_drag = F_roll + a * v0**2 + b * v0
         #insantiate controller
         self.PI = PID(Kp=Kp, Ki=Ki, Ts=Ts, umax=umax, umin=umin, Kaw=Kaw, initialState=F_drag)
-        self.precomp = Precompensator_t2(Kp=Kp, Ki=Ki, Ts=Ts, initial_v_ref=v0)
+        self.precomp = Precompensator(Kp=Kp, Ki=Ki, Ts=Ts, initial_setpoint_ref=v0)
 
     def update(self, desired_speed, speed):
         V_ref_filtered = self.precomp.filter(desired_speed)
-
+        
         force = self.PI.update(V_ref_filtered, speed)
+        
         return force
 
 
 # Task 3 Controllers
 
-
+#TODO check
 class Precompensator_t3:
     def __init__(self, Ts = 1/60, alpha = 1.5):
         self.y_f = 0
@@ -61,37 +62,52 @@ class Precompensator_t3:
 
 
 class Y_controller:
+    #TODO change Kp inner (tested with higher than 0.1240 or whatever it was)
     def __init__(self, Ts=1/60,
-                 Kp_inner=2, delta_max=0.05, delta_min=-0.05,
-                #  Kp_outer=0.2160, Ki_outer=0.3240, phi_max=np.deg2rad(20), phi_min=-np.deg2rad(20)):
-                Kp_outer=0.2160, Ki_outer=0.1240, phi_max=np.deg2rad(20), phi_min=-np.deg2rad(20)):
+                Kp_inner=0.5, delta_max=0.05, delta_min=-0.05,
+                # Kp_outer=0.1440, Ki_outer=.1440, phi_max=np.deg2rad(20), phi_min=-np.deg2rad(20), P_loc = 2): 
+                phi_max=np.deg2rad(20), phi_min=-np.deg2rad(20), P_loc = 2):
+                # Kp_outer=0.2160, Ki_outer=0.3240, phi_max=np.deg2rad(200), phi_min=-np.deg2rad(200)): old
         #Kaw = 1.0/Ts #standard value
 
         # Caluclate Precomp Values:
 
 
-
         v0 = 27.78
-        a = 0.2
-        b = 20
-        F_roll = 100
-        F_drag = F_roll + a * v0**2 + b * v0
+
+        
+
+        kp = 2*P_loc/v0
+
+        ki = v0*kp^2/4
+
+        #TODO none of this is used?
+        # a = 0.2
+        # b = 20
+        # F_roll = 100
+        # F_drag = F_roll + a * v0**2 + b * v0
         #init controller
         self.c_inner = PID(Kp=Kp_inner, Ts=Ts, umax=delta_max, umin=delta_min) # Detla Controller Psi des -> Delta
-        self.c_outer = PID(Kp=Kp_outer, Ki=Ki_outer, Ts=Ts, umax=phi_max, umin=phi_min, Kaw=5, initialState=F_drag) #Y controller Y-> psi_des
+        self.c_outer = PID(Kp=Kp_outer, Ki=Ki_outer, Ts=Ts, umax=phi_max, umin=phi_min, Kaw=1) #TODO change from 0, initialState=0.0) #Y controller Y-> psi_des
 
-        self.precomp = Precompensator_t3() # Precomp
+        self.precomp = Precompensator(Kp=Kp_outer, Ki=Ki_outer, Ts=Ts, initial_setpoint_ref=0) # Precomp
 
 
     def update(self, y_des, y, phi):
 
         y_filt = self.precomp.filter(y_des)
+
+        # Precomp Bypass FIXME
+        # y_filt = y_des
+
         phi_des = self.c_outer.update(y_filt, y)
-        # phi_des = self.c_outer.update(y_des, y)
+
         delta = self.c_inner.update(phi_des, phi)
     
-        print(f"Y = {y}, y_filt = {y_filt}, e_f = {y_filt-y}, phi_des = {phi_des}, phi = {phi}")
-        return delta
+        # print(f"Y = {y}, y_filt = {y_filt}, e_f = {y_filt-y}, phi_des = {phi_des}, phi = {phi}")
+
+        #TODO remove phi_des return
+        return delta, phi_des
 
 
 
@@ -138,8 +154,9 @@ class Controller:
 
         self.vdes = desired_speed
 
-        self.delta_cmd = 0 #self.y_controller.update(self.desired_y, y, phi)
+        #TODO remove phi des return
+        self.delta_cmd, phi_des = self.y_controller.update(self.desired_y, y, phi)
         self.Fd_cmd = self.v_controller.update(desired_speed, speed) 
 
-        return self.Fd_cmd, self.delta_cmd
+        return self.Fd_cmd, self.delta_cmd, phi_des
     

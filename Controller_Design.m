@@ -12,7 +12,7 @@ P_y_from_psi = tf(v0,[1, 0]);
 % pidTuner(P_psi_from_delta,"P")
 
 % Picked from output
-C_inner.Kp = 2
+C_inner.Kp = 1
 %%
 s = tf("s");
 
@@ -32,7 +32,9 @@ P_outer = cltf_inner * P_y_from_psi;
 
 %% hand Calc 
 
-P_loc = 3;
+% P_loc = 3;
+P_loc = 2;
+
 kp = 2*P_loc/v0
 
 ki = v0*kp^2/4
@@ -43,7 +45,7 @@ cltf_outer = feedback(Controller_outer * P_outer, 1);
 
 precomp_loc = zero(Controller_outer);
 
-precomp = -precomp_loc/(s-precomp_loc);
+precomp = -precomp_loc/(s-precomp_loc)
 
 
 %%

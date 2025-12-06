@@ -22,6 +22,14 @@
             "console": "integratedTerminal"
         },
 
+        {
+            "name": "Task 3",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/interactiveSim/Task3.py",
+            "console": "integratedTerminal"
+        },
+
 
         {
             "name": "Run Sim",
