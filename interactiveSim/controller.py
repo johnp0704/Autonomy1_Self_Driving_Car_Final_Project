@@ -91,7 +91,7 @@ class Y_controller:
         # F_drag = F_roll + a * v0**2 + b * v0
         #init controller
         self.c_inner = PID(Kp=Kp_inner, Ts=Ts, umax=delta_max, umin=delta_min) # Detla Controller Psi des -> Delta
-        self.c_outer = PID(Kp=Kp_outer, Ki=Ki_outer, Ts=Ts, umax=phi_max, umin=phi_min, Kaw=1) #TODO change from 0, initialState=0.0) #Y controller Y-> psi_des
+        self.c_outer = PID(Kp=Kp_outer, Ki=Ki_outer, Ts=Ts, umax=phi_max, umin=phi_min, Kaw=2) #TODO change from 0, initialState=0.0) #Y controller Y-> psi_des
 
         self.precomp = Precompensator(Kp=Kp_outer, Ki=Ki_outer, Ts=Ts, initial_setpoint_ref=0) # Precomp
         # self.precomp = Precompensator_t3(Ts, P_loc/2) # Precomp
@@ -127,7 +127,8 @@ class Controller:
         self.speed = initial_conditions[1]
 
         self.F_d_min = -7000.0 #min force (N) (Given)
-        self.F_d_max = Car.F_max_force
+        c = Car(0,0)
+        self.F_d_max = c.F_max_force
 
         # states/controller initialization go here
         self.pos = 0
