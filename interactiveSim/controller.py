@@ -64,7 +64,7 @@ class Precompensator_t3:
 class Y_controller:
     #TODO change Kp inner (tested with higher than 0.1240 or whatever it was)
     def __init__(self, Ts=1/60,
-                Kp_inner=1, delta_max=0.05, delta_min=-0.05,
+                Kp_inner=0.5, delta_max=0.05, delta_min=-0.05,
                 # Kp_outer=0.1440, Ki_outer=.1440, phi_max=np.deg2rad(20), phi_min=-np.deg2rad(20), P_loc = 2): 
                 phi_max=np.deg2rad(20), phi_min=-np.deg2rad(20), P_loc = 2):
                 # Kp_outer=0.2160, Ki_outer=0.3240, phi_max=np.deg2rad(200), phi_min=-np.deg2rad(200)): old
@@ -81,8 +81,8 @@ class Y_controller:
 
         Ki_outer = v0*Kp_outer**2/4
 
-        Ki_outer = 0.4039776818
-        Kp_inner = 0.2411807055
+        # Ki_outer = 0.4039776818
+        # Kp_inner = 0.2411807055
 
         #TODO none of this is used?
         # a = 0.2

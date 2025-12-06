@@ -12,7 +12,7 @@ P_y_from_psi = tf(v0,[1, 0]);
 % pidTuner(P_psi_from_delta,"P")
 
 % Picked from output
-C_inner.Kp = 1
+C_inner.Kp = 6
 %%
 s = tf("s");
 
