@@ -81,6 +81,9 @@ class Y_controller:
 
         Ki_outer = v0*Kp_outer**2/4
 
+        Ki_outer = 0.4039776818
+        Kp_inner = 0.2411807055
+
         #TODO none of this is used?
         # a = 0.2
         # b = 20
