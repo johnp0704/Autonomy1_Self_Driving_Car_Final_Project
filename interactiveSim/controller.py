@@ -66,52 +66,34 @@ class Y_controller:
     def __init__(self, Ts=1/60,
                 Kp_inner=0.5, delta_max=0.05, delta_min=-0.05,
                 # Kp_outer=0.1440, Ki_outer=.1440, phi_max=np.deg2rad(20), phi_min=-np.deg2rad(20), P_loc = 2): 
-                phi_max=np.deg2rad(20), phi_min=-np.deg2rad(20), P_loc = 2):
-                # Kp_outer=0.2160, Ki_outer=0.3240, phi_max=np.deg2rad(200), phi_min=-np.deg2rad(200)): old
-        #Kaw = 1.0/Ts #standard value
+                phi_max=np.deg2rad(15), phi_min=-np.deg2rad(15), P_loc = 2):
+
 
         # Caluclate Precomp Values:
 
 
         v0 = 27.78
 
-        
-
+    
         Kp_outer = 2*P_loc/v0
-
         Ki_outer = v0*Kp_outer**2/4
 
-        # Ki_outer = 0.4039776818
-        # Kp_inner = 0.2411807055
-
-        #TODO none of this is used?
-        # a = 0.2
-        # b = 20
-        # F_roll = 100
-        # F_drag = F_roll + a * v0**2 + b * v0
-        #init controller
         self.c_inner = PID(Kp=Kp_inner, Ts=Ts, umax=delta_max, umin=delta_min) # Detla Controller Psi des -> Delta
-        self.c_outer = PID(Kp=Kp_outer, Ki=Ki_outer, Ts=Ts, umax=phi_max, umin=phi_min, Kaw=2) #TODO change from 0, initialState=0.0) #Y controller Y-> psi_des
+        self.c_outer = PID(Kp=Kp_outer, Ki=Ki_outer, Ts=Ts, umax=phi_max, umin=phi_min, Kaw=1.5) #TODO change from 0, initialState=0.0) #Y controller Y-> psi_des
 
         self.precomp = Precompensator(Kp=Kp_outer, Ki=Ki_outer, Ts=Ts, initial_setpoint_ref=0) # Precomp
-        # self.precomp = Precompensator_t3(Ts, P_loc/2) # Precomp
+
 
 
     def update(self, y_des, y, phi):
 
         y_filt = self.precomp.filter(y_des)
 
-        # Precomp Bypass FIXME
-        # y_filt = y_des
-
         phi_des = self.c_outer.update(y_filt, y)
 
         delta = self.c_inner.update(phi_des, phi)
     
-        # print(f"Y = {y}, y_filt = {y_filt}, e_f = {y_filt-y}, phi_des = {phi_des}, phi = {phi}")
-
-        #TODO remove phi_des return
-        return delta, phi_des
+        return delta
 
 
 
@@ -149,19 +131,20 @@ class Controller:
     #             the columns are: [relative longitudinal position, relative lateral position, relative speed]
     # grade is a road grade object. Use grade.grade_at to find the road grade at any x
     def update(self, speed, x, y, phi, desired_speed, des_lane, other_cars, grade):
-        
 
-        Ts = self.Ts
-        
+
+
+
+
+
 
         self.desired_y = des_lane * 11.25 # dist from center to lane
 
 
         self.vdes = desired_speed
 
-        #TODO remove phi des return
-        self.delta_cmd, phi_des = self.y_controller.update(self.desired_y, y, phi)
+        self.delta_cmd= self.y_controller.update(self.desired_y, y, phi)
         self.Fd_cmd = self.v_controller.update(desired_speed, speed) 
 
-        return self.Fd_cmd, self.delta_cmd, phi_des
+        return self.Fd_cmd, self.delta_cmd
     

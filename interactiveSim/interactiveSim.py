@@ -315,7 +315,7 @@ plot_4 = LinePlot(PLOT_4,  win=4.0, vmin=-5000, vmax=1700, title="Force (N)")
 plot_5 = LinePlot(PLOT_5,  win=4.0, vmin=-8,   vmax=8,   title="Steering (deg)")
 
 #TODO remove
-plot_NK = LinePlot(PLOT_NK,  win=4.0, vmin=-180,   vmax=180,   title="Heading (deg)")
+plot_NK = LinePlot(PLOT_NK,  win=4.0, vmin=-15,   vmax=15,   title="Heading (deg)")
 
 grade_pl = GradeWindowPlot(GRADE_PLOT_RECT)
 
@@ -369,9 +369,8 @@ while running:
         if keys[pygame.K_RIGHT]:  des_lane = min(des_lane + 1, 1)
         if keys[pygame.K_LEFT]:   des_lane = max(des_lane - 1,-1)
 
-        Fd, delta_cmd, phi_des = controller.update(car.speed, car.x, car.y, car.phi, user_speed, des_lane, traffic.data, grade)
+        Fd, delta_cmd= controller.update(car.speed, car.x, car.y, car.phi, user_speed, des_lane, traffic.data, grade)
 
-        print(car.phi - phi_des)
 
         # Grade and dynamics step
         beta = math.atan(grade.grade_at(car.x) / 100.0)  # radians
