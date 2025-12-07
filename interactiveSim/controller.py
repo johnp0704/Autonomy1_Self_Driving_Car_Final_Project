@@ -58,6 +58,7 @@ class V_controller:
 
 
 # Task 3 Controllers
+#TODO never used??
 class Precompensator_t3:
     def __init__(self, Ts = 1/60, alpha = 1.5):
         self.y_f = 0
