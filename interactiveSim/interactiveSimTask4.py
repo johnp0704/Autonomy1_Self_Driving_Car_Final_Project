@@ -1,6 +1,7 @@
 # copyright 2025 Dr. Hamid Ossareh, Univ of. Vermont
 # do not share or distribute
 # EE5550: Autonomy; final project
+# Modified by Niels Keller and John Poirier to include Task 4 content. 
 
 import pygame, random, sys, math, csv, time
 from collections import deque
@@ -369,7 +370,7 @@ while running:
         if keys[pygame.K_RIGHT]:  des_lane = min(des_lane + 1, 1)
         if keys[pygame.K_LEFT]:   des_lane = max(des_lane - 1,-1)
 
-        Fd, delta_cmd= controller.update(car.speed, car.x, car.y, car.phi, user_speed, des_lane, traffic.data, grade)
+        Fd, delta_cmd = controller.update(car.speed, car.x, car.y, car.phi, user_speed, des_lane, traffic.data, grade)
 
 
         # Grade and dynamics step
@@ -421,9 +422,16 @@ while running:
     # HUD
     fps = clock.get_fps()
     hud = font.render(
-        f"FPS: {fps:4.1f}, Vdes: {user_speed:5.1f} m/s, Fuel: {car.total_fuel/1000:3.0f} g, t: {sim_t:3.0f} s, min dist: {traffic.min_distance:5.1f} m",
-        True, cfg.PALE
-    )
+    f"FPS: {fps:4.1f}, "
+    f"Driver Vdes: {user_speed:5.2f} m/s, "
+    f"MPC Vdes_opt: {controller.last_v_des_opt:5.2f} m/s, "
+    f"PI_ref: {controller.v_controller.last_filtered_ref:5.2f} m/s, "
+    f"Fuel: {car.total_fuel/1000:3.0f} g, "
+    f"t: {sim_t:3.0f} s, "
+    f"min dist: {traffic.min_distance:5.1f} m",
+    True, cfg.PALE
+)
+
     screen.blit(hud, (12, cfg.H - 28))
     pygame.display.flip()
 

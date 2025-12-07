@@ -2,6 +2,7 @@
 from PID import PID
 from car import Car
 import numpy as np
+from FuelOptimizerMPC_controller_JP import mpc_select_v_des
 
 import enum
 
@@ -48,12 +49,14 @@ class V_controller:
         #insantiate controller
         self.PI = PID(Kp=Kp, Ki=Ki, Ts=Ts, umax=umax, umin=umin, Kaw=Kaw, initialState=F_drag)
         self.precomp = Precompensator(Kp=Kp, Ki=Ki, Ts=Ts, initial_setpoint_ref=v0)
+        self.last_filtered_ref = 0.0
 
     def update(self, desired_speed, speed):
         V_ref_filtered = self.precomp.filter(desired_speed)
         
         force = self.PI.update(V_ref_filtered, speed)
         
+        self.last_filtered_ref = V_ref_filtered
         return force
 
 
@@ -101,7 +104,7 @@ class Y_controller:
         return delta
 
 
-
+#Task 4: putting it all together
 class Controller:
 
     LANE_MIDPOINT_OFFSET = 11.25
@@ -132,6 +135,8 @@ class Controller:
         self.y_controller = Y_controller()
 
         self.state = States.MOVING_RIGHT
+        self.last_v_des_opt = 0.0
+
         
 
     def time_to_impact(self, rel_x, rel_speed, car_anticipate_right_lane, npc_in_right_lane):
@@ -246,11 +251,13 @@ class Controller:
                         print("moving left to pass")
                     
                 else:
-                    # Other lane not safe need to slow down
-                    if closest_impact_time is not None and closest_impact_time > time_to_impact:
-                        if (time_to_impact < FOLLOWING_DISTANCE):
-                            desired_speed = speed + rel_speed
-                            closest_impact_time = time_to_impact
+                    # Other lane not safe — need to slow down
+                    if time_to_impact is not None:
+                        if (closest_impact_time is None) or (time_to_impact < closest_impact_time):
+                            if time_to_impact < FOLLOWING_DISTANCE:
+                                desired_speed = speed + rel_speed
+                                closest_impact_time = time_to_impact
+
 
 
         # In Left Lane
@@ -317,7 +324,16 @@ class Controller:
 
 
         self.delta_cmd= self.y_controller.update(self.desired_y, y, phi)
-        self.Fd_cmd = self.v_controller.update(desired_speed, speed) 
 
+        #Fuel optimization MPC
+        v_driver = desired_speed
+        v_des_opt = mpc_select_v_des(x, speed, grade, other_cars, v_driver)
+        v_des_opt = min(v_des_opt, desired_speed) #ensure to keep safe distances
+        self.last_v_des_opt = v_des_opt
+
+        self.Fd_cmd = self.v_controller.update(v_des_opt, speed)
+
+        #self.Fd_cmd = self.v_controller.update(desired_speed, speed) #used before fuel optimization)
+        
         return self.Fd_cmd, self.delta_cmd
     
