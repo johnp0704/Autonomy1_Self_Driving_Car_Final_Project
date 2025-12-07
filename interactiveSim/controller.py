@@ -232,6 +232,7 @@ class Controller:
         # Check for impending collision:
         closest_impact_time = None
 
+        # In Right lane
         if anticipated_lane_right:
             for NPC_car in cars_right_lane:
                 time_to_impact = NPC_car[2]
@@ -245,28 +246,38 @@ class Controller:
                     
                 else:
                     # Other lane not safe need to slow down
-                    if closest_impact_time is not None or closest_impact_time > time_to_impact:
+                    if closest_impact_time is not None and closest_impact_time > time_to_impact:
                         if (time_to_impact < FOLLOWING_DISTANCE):
                             desired_speed = speed + rel_speed
                             closest_impact_time = time_to_impact
 
 
-
+        # In Left Lane
         else:
-            # try to merge back into right lane if able
+            
+            # always try to get out of passing lane
             if not cars_right_lane:
-                    self.state = States.MOVING_RIGHT
-                    print("moving right to pass")
+                self.state = States.MOVING_RIGHT
+                print("returning to regular lane from passing lane")
 
-            # Other lane not safe need to slow down
-            else:
-                for NPC_car in cars_left_lane:
-                    time_to_impact = NPC_car[2]
-                    rel_speed = NPC_car[1]
 
-                    if time_to_impact is not None and (closest_impact_time is None or closest_impact_time > time_to_impact):
-                        desired_speed = speed + rel_speed
-                        closest_impact_time = time_to_impact
+
+            for NPC_car in cars_left_lane:
+                time_to_impact = NPC_car[2]
+                rel_speed = NPC_car[1]
+
+                # Check if we are headed to crash and if right lane is clear
+                if time_to_impact is not None and not cars_right_lane:
+                    if (time_to_impact < FOLLOWING_DISTANCE):
+                        self.state = States.MOVING_RIGHT
+                        print("moving right to pass")
+                    
+                else:
+                    # Other lane not safe need to slow down
+                    if closest_impact_time is not None and closest_impact_time > time_to_impact:
+                        if (time_to_impact < FOLLOWING_DISTANCE):
+                            desired_speed = speed + rel_speed
+                            closest_impact_time = time_to_impact
                 
 
 

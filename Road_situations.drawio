@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
   <diagram name="Page-1" id="iXildjfdUZJLm1BcQKa-">
-    <mxGraphModel dx="984" dy="572" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="679" dy="458" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -509,33 +509,6 @@
         </mxCell>
         <mxCell id="SOU1BxYTdOSlSudeJjKw-149" value="C" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="983.1400000000003" y="649" width="20" height="30" as="geometry" />
-        </mxCell>
-        <mxCell id="SOU1BxYTdOSlSudeJjKw-165" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="SOU1BxYTdOSlSudeJjKw-150" target="SOU1BxYTdOSlSudeJjKw-164">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="SOU1BxYTdOSlSudeJjKw-150" value="S&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;0&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
-          <mxGeometry x="640" y="920" width="40" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="SOU1BxYTdOSlSudeJjKw-170" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SOU1BxYTdOSlSudeJjKw-164" target="SOU1BxYTdOSlSudeJjKw-169">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="SOU1BxYTdOSlSudeJjKw-164" value="S1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
-          <mxGeometry x="720" y="840" width="40" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="SOU1BxYTdOSlSudeJjKw-171" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SOU1BxYTdOSlSudeJjKw-166" target="SOU1BxYTdOSlSudeJjKw-168">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="SOU1BxYTdOSlSudeJjKw-166" value="S3" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
-          <mxGeometry x="720" y="1000" width="40" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="SOU1BxYTdOSlSudeJjKw-167" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.01;entryY=0.57;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="SOU1BxYTdOSlSudeJjKw-150" target="SOU1BxYTdOSlSudeJjKw-166">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="SOU1BxYTdOSlSudeJjKw-168" value="R3" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
-          <mxGeometry x="800" y="1000" width="40" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="SOU1BxYTdOSlSudeJjKw-169" value="R1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
-          <mxGeometry x="800" y="840" width="40" height="40" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
