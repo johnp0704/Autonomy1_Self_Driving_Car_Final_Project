@@ -8,6 +8,7 @@ from car import Car
 from cfg import Cfg
 from gradefield import GradeField
 from controller import Controller
+import numpy as np
 
 cfg = Cfg()
 SEED = 10
@@ -45,9 +46,12 @@ CENTER_DASH_GAP = int(cfg.CENTER_DASH_GAP_M * cfg.PX_PER_M)
 
 PLOT_RECTS = [
     pygame.Rect(cfg.PLOT_MARGIN, cfg.PLOT_MARGIN + i*(cfg.PLOT_H + cfg.PLOT_VGAP), cfg.PLOT_W, cfg.PLOT_H)
-    for i in range(5)
+    
+    #TODO toggle back
+    # for i in range(5)
+    for i in range(6)
 ]
-GRADE_PLOT_RECT, PLOT_2, PLOT_3, PLOT_4, PLOT_5 = PLOT_RECTS
+GRADE_PLOT_RECT, PLOT_2, PLOT_3, PLOT_4, PLOT_5, PLOT_NK = PLOT_RECTS
 LEFT_COLUMN_RIGHT = cfg.PLOT_MARGIN + cfg.PLOT_W
 ROAD_X = LEFT_COLUMN_RIGHT + cfg.ROAD_GUTTER
 ROAD_WIDTH = cfg.LANE_COUNT * cfg.LANE_WIDTH
@@ -309,6 +313,10 @@ plot_2  = LinePlot(PLOT_2, win=4.0, vmin=0,   vmax=140, title="Speed V (km/h)")
 plot_3 = LinePlot(PLOT_3,  win=4.0, vmin=200, vmax=6000, title="Fuel rate")  
 plot_4 = LinePlot(PLOT_4,  win=4.0, vmin=-5000, vmax=1700, title="Force (N)")  
 plot_5 = LinePlot(PLOT_5,  win=4.0, vmin=-8,   vmax=8,   title="Steering (deg)")
+
+#TODO remove
+plot_NK = LinePlot(PLOT_NK,  win=4.0, vmin=-15,   vmax=15,   title="Heading (deg)")
+
 grade_pl = GradeWindowPlot(GRADE_PLOT_RECT)
 
 font = pygame.font.SysFont(None, 20)
@@ -361,7 +369,8 @@ while running:
         if keys[pygame.K_RIGHT]:  des_lane = min(des_lane + 1, 1)
         if keys[pygame.K_LEFT]:   des_lane = max(des_lane - 1,-1)
 
-        Fd, delta_cmd = controller.update(car.speed, car.x, car.y, car.phi, user_speed, des_lane, traffic.data, grade)
+        Fd, delta_cmd= controller.update(car.speed, car.x, car.y, car.phi, user_speed, des_lane, traffic.data, grade)
+
 
         # Grade and dynamics step
         beta = math.atan(grade.grade_at(car.x) / 100.0)  # radians
@@ -379,6 +388,9 @@ while running:
         plot_4.add(sim_t, Fd)
         plot_5.add(sim_t, delta_cmd*180/math.pi)
 
+        #TODO remove
+        plot_NK.add(sim_t, np.rad2deg(car.phi))
+
         # Telemetry (≤ 60 s)
         if sim_t <= 60.0:
             telemetry.append([sim_t, car.speed, car.y, Fd, delta_cmd, car.phi, car.total_fuel, traffic.min_distance])
@@ -392,7 +404,8 @@ while running:
 
     # Plots
     grade_pl.draw(screen, grade, car.x)
-    plot_2.draw(screen); plot_3.draw(screen); plot_4.draw(screen); plot_5.draw(screen)
+    plot_2.draw(screen); plot_3.draw(screen); plot_4.draw(screen); plot_5.draw(screen); plot_NK.draw(screen)
+    #TODO remove NK
 
     # Pause overlay
     if paused:
