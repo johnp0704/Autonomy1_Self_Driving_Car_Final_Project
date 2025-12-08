@@ -225,7 +225,7 @@ class Controller:
             else:
                 print("NPC CAR LANE LOCATION ERROR")
             
-            print(f"Car Y: {y:<6.2f}| Rel x: {npc_car[0]:<6.2f}| Rel y: {npc_car[1]* self.LAT_READING_CONVERSION_FACTOR:<6.2f}| rel speed: {npc_car[2]:<6.2f}| LL car #: {len(cars_left_lane)}| RL car #: {len(cars_right_lane)}")
+            # print(f"Car Y: {y:<6.2f}| Rel x: {npc_car[0]:<6.2f}| Rel y: {npc_car[1]* self.LAT_READING_CONVERSION_FACTOR:<6.2f}| rel speed: {npc_car[2]:<6.2f}| LL car #: {len(cars_left_lane)}| RL car #: {len(cars_right_lane)}")
 
 
 

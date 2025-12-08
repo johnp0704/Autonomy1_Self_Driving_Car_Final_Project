@@ -10,7 +10,7 @@ from gradefield import GradeField
 from controller import Controller
 
 cfg = Cfg()
-SEED = 30
+SEED = 15
 random.seed(SEED)
 
 # =========================
