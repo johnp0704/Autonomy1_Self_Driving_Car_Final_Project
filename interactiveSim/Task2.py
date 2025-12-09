@@ -39,23 +39,25 @@ v0_150 = 150 * v0_100/100 #KM/H
 def F_d_ss(v, beta):
     return m*g*np.sin(beta) + Froll + a*v**2 + b*v
 
-def plot_lin_analisis(v0 = 27.78, step_size = 1, sim_length = 150, step_time = 50):
+def plot_lin_analisis(v0_sim = 27.78, v0_lin = None, step_size = 1, sim_length = 150, step_time = 50):
+    
+    # Use v0_sim as the default linearization point if not specified
+    if v0_lin is None:
+        v0_lin = v0_sim
 
     t = np.arange(0, sim_length + Ts, Ts)
     
-    # define plant
-    c = 2*a*v0 + b
+    # Define plant - linearized about v0_lin
+    c = 2*a*v0_lin + b
     plant = ct.tf(1,(m,c))
 
     # Run Linear Sim
     _, step_res_linaprox = ct.step_response(plant, T = t[int(round(step_time/Ts)):])
     step_res_linaprox = np.concatenate((np.zeros((int(round(step_time/Ts)))), step_res_linaprox))
 
-
-
     # Non lim sim
-    eq_input = F_d_ss(v0,0)
-    print(f"EQ input: {eq_input}N")
+    eq_input = F_d_ss(v0_lin, 0)
+    print(f"EQ input (Linearized at v0_lin={round(v0_lin,2)}): {eq_input}N")
 
 
     # Create input sequence
@@ -63,16 +65,11 @@ def plot_lin_analisis(v0 = 27.78, step_size = 1, sim_length = 150, step_time = 5
     F_d_in[int(round(step_time/Ts)):] = eq_input + step_size
 
     vel_nonlin_sim_out = np.zeros(len(t))
-    nonlin_speed = v0
+    nonlin_speed = v0_sim # NONLINEAR SIMULATION STARTS AT v0_sim
 
     for i,_ in enumerate(t):
-        # car1.update(F_d_in[i], 0, 0)
-        # vel_nonlin_sim_out[i] = car1.speed
-        # # if i%100 == 0:
-        # #     print(car1.speed)0
         F_c = 0 # no grade
         F_sat = F_d_in[i]
-
 
         #Non lin sim
         F_air_nonlin = a*nonlin_speed**2 + b*nonlin_speed
@@ -83,17 +80,14 @@ def plot_lin_analisis(v0 = 27.78, step_size = 1, sim_length = 150, step_time = 5
         vel_nonlin_sim_out[i] = nonlin_speed
 
 
-
     plt.figure(figsize=figsize)
-    plt.plot(t, vel_nonlin_sim_out)
-    plt.plot(t, step_res_linaprox * step_size + v0, "--")
+    plt.plot(t, vel_nonlin_sim_out, label="Nonlinear")
+    plt.plot(t, step_res_linaprox * step_size + v0_sim, "--", label="Linear")
 
-    plt.legend(["Nonlinear", "Linear"])
-
-    plt.title(f"Step Responses: Step Size = {step_size} (N), V0 = {round(v0,2)} (m/s)")
-
+    plt.legend()
+    plt.title(f"Step Responses: Step Size = {step_size} (N), $v_{{0, \text{{sim}}}} = {round(v0_sim,2)}$ (m/s), $v_{{0, \text{{lin}}}} = {round(v0_lin,2)}$ (m/s)")
     plt.xlabel("Time (s)")
-    plt.ylabel("Delta V (m/s)")
+    plt.ylabel("Speed (m/s)")
 
     fig_path = os.path.join(FIGS_PATH, f"t2_Linsim_step{step_size}_v0{round(v0)}.png")
     plt.savefig(fig_path, dpi = 400)
@@ -101,10 +95,10 @@ def plot_lin_analisis(v0 = 27.78, step_size = 1, sim_length = 150, step_time = 5
     if __name__ == "__main__":
         plt.show()
 
-plot_lin_analisis()
-plot_lin_analisis(step_size=600)
-plot_lin_analisis(v0 = v0_150)
-plot_lin_analisis(v0 = v0_150, step_size=600)
+plot_lin_analisis(v0_sim = v0_100)
+plot_lin_analisis(v0_sim = v0_100, step_size=600)
+plot_lin_analisis(v0_sim=v0_100, v0_lin=v0_150)
+plot_lin_analisis(v0_sim=v0_100, v0_lin=v0_150, step_size=600)
 
 #==========Controller Simulations============
 from controller import V_controller as controller
