@@ -2,7 +2,6 @@
 from PID import PID
 from car import Car
 import numpy as np
-from FuelOptimizerMPC_controller_JP import mpc_select_v_des
 
 import enum
 
