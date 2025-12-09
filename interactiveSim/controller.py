@@ -327,12 +327,12 @@ class Controller:
         self.delta_cmd= self.y_controller.update(self.desired_y, y, phi)
 
         #Fuel optimization MPC
-        v_driver = desired_speed
-        v_des_opt = mpc_select_v_des(x, speed, grade, other_cars, v_driver)
-        v_des_opt = min(v_des_opt, desired_speed) #ensure to keep safe distances
-        self.last_v_des_opt = v_des_opt
+        # v_driver = desired_speed
+        # v_des_opt = mpc_select_v_des(x, speed, grade, other_cars, v_driver)
+        # v_des_opt = min(v_des_opt, desired_speed) #ensure to keep safe distances
+        # self.last_v_des_opt = v_des_opt
 
-        self.Fd_cmd = self.v_controller.update(v_des_opt, speed)
+        self.Fd_cmd = self.v_controller.update(desired_speed, speed) #desired_speed without MPC, v_des_opt with MPC
 
         #self.Fd_cmd = self.v_controller.update(desired_speed, speed) #used before fuel optimization)
         
