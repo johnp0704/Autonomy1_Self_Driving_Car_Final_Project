@@ -16,8 +16,6 @@ omega_n = 1.675 #chosen
 Ki = m * (omega_n**2)
 Kp = 2 * zeta * omega_n * m - c
 
-Ki = Ki/2
-Kp = Kp/2
 
 print(f'\nDesigned Controller Gains:')
 print(f'Kp: {Kp:.4f}')
@@ -72,7 +70,7 @@ print(f'Settling Time: {settling_time:.4f} s | (Req: <10 s)')
 plt.figure()
 plt.plot(t, y)
 plt.axhline(1.0, color='r', linestyle='--', label='Target')
-plt.title(f'Closed Loop Step Response (Half-Gains)')
+plt.title(f'Closed Loop Step Response (Normalized)\nZeta={zeta}, Wn={omega_n}')
 plt.xlabel('Time (s)')
 plt.ylabel('Speed (normalized)')
 plt.grid(True)
