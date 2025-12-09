@@ -89,7 +89,8 @@ class Y_controller:
         self.c_inner = PID(Kp=Kp_inner, Ts=Ts, umax=delta_max, umin=delta_min) # Detla Controller Psi des -> Delta
         self.c_outer = PID(Kp=Kp_outer, Ki=Ki_outer, Ts=Ts, umax=phi_max, umin=phi_min, Kaw=1.5) #TODO change from 0, initialState=0.0) #Y controller Y-> psi_des
 
-        self.precomp = Precompensator(Kp=Kp_outer, Ki=Ki_outer, Ts=Ts, initial_setpoint_ref=0) # Precomp
+        self.precomp = Precompensator_t3(alpha=1) #Precompensator(Kp=Kp_outer, Ki=Ki_outer, Ts=Ts, initial_setpoint_ref=0) # Precomp
+        
 
 
 
@@ -315,24 +316,23 @@ class Controller:
     def update(self, speed, x, y, phi, desired_speed, des_lane, other_cars, grade):
 
         #TODO optimization based fuel speed control up here. It will be passed into the section below to make sure that it stays safe
-
-
-        self.desired_y = des_lane * 11.25 # dist from center to lane
-        self.vdes = desired_speed
-
-        # Todo path planning
-        self.desired_y, desired_speed = self.state_machine(y, other_cars, desired_speed, speed)
-
-
-        self.delta_cmd= self.y_controller.update(self.desired_y, y, phi)
-
         #Fuel optimization MPC
         v_driver = desired_speed
         v_des_opt = mpc_select_v_des(x, speed, grade, other_cars, v_driver)
         v_des_opt = min(v_des_opt, desired_speed) #ensure to keep safe distances
         self.last_v_des_opt = v_des_opt
 
-        self.Fd_cmd = self.v_controller.update(v_des_opt, speed)
+
+        # Saftey and path planning
+        # self.desired_y, desired_speed = self.state_machine(y, other_cars, v_des_opt, speed)  TODO Use this one/remove testing speed
+        self.desired_y, desired_speed = self.state_machine(y, other_cars, 27.78, speed) 
+
+
+        self.delta_cmd= self.y_controller.update(self.desired_y, y, phi)
+
+       
+
+        self.Fd_cmd = self.v_controller.update(desired_speed, speed)
 
         #self.Fd_cmd = self.v_controller.update(desired_speed, speed) #used before fuel optimization)
         

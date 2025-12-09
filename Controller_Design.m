@@ -49,9 +49,18 @@ precomp = -precomp_loc/(s-precomp_loc)
 
 
 %%
+
+
+cd("interactiveSim\figs\")
 figure
 step(precomp*cltf_outer)
+theme("light")
+saveas(gcf, "T3_lin_step.jpg")
 
 
 figure
 margin(Controller_outer * P_outer)
+theme("light")
+saveas(gcf, "T3_gain_phase.jpg")
+
+cd("../..")
