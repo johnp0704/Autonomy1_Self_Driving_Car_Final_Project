@@ -9,15 +9,20 @@ Ki = 3647.3125;
 % PI controller
 C = Kp + Ki/s;
 
+% Display Controller Zero and Pole
 zero(C)
-
 pole(C)
+
 %% Precompensator Ki / (Kp*s + Ki)
 Kpre = Ki / (Kp*s + Ki);
 
-%% Combined Controller (if needed)
+%% Combined Controller (if desired)
 C_total = C * Kpre;
 
-%% Open PID Tuner with your PI controller structure
-% PID Tuner supports PID/PI/PIDF, so we pass 'pi'.
-pidTuner(P, C);
+%% --------- Plot Gain and Phase Margins (OPEN LOOP ONLY) ---------
+L = C * P;  % open-loop transfer function
+
+figure;
+margin(L);          % Bode with GM/PM markers
+grid on;
+title('Open-Loop Gain and Phase Margins');
