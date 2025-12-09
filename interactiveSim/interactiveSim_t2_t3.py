@@ -8,7 +8,7 @@ from collections import deque
 from car import Car
 from cfg import Cfg
 from gradefield import GradeField
-from controller import Controller
+from controller_t2_t3 import Controller
 import numpy as np
 
 cfg = Cfg()
