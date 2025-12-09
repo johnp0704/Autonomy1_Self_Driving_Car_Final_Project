@@ -5,16 +5,16 @@ import os
 
 #Consts
 m = 1300
-Froll = 100 #𝑁
-a = 0.2 #𝑁𝑠^2/𝑚2
-b = 20 #𝑁𝑠/𝑚
-g = 9.8 #𝑚/𝑠^2
-fd_min = -7000 #𝑁
+Froll = 100 #N
+a = 0.2 #Ns^2/m2
+b = 20 #Ns/m
+g = 9.8 #m/s^2
+fd_min = -7000 #N
 zeta = 0.95
 eta_g = 0.8
 eta_d = 3.8
-rw = 0.34 #𝑚
-F_bar =  200 #𝑚𝑔/𝑠
+rw = 0.34 #n
+F_bar =  200 #ng/d
 Te_max = 200 #Nm
 F_max = (Te_max * eta_g * eta_d) / rw * zeta #mg/s from engine
 F_min = -7000 #mg/s from brakes
@@ -62,7 +62,7 @@ plt.title("Task 1: Road Profile (Amp=3) vs Horizontal Distance")
 plt.xlabel("Distance (m)")
 plt.ylabel("Height (m)")
 fig_path = os.path.join(FIGS_PATH, "road_shape.png")
-plt.savefig(fig_path, dpi = 600)
+plt.savefig(fig_path, dpi = 400)
 plt.grid()
 if __name__ == "__main__":
     plt.show()
@@ -78,7 +78,7 @@ plt.ylabel("Torque (Nm)")
 plt.title("BSFC Contour Map")
 plt.colorbar(cont, label="BSFC")
 fig_path = os.path.join(FIGS_PATH, "BSFC_contour.png")
-plt.savefig(fig_path, dpi = 600)
+plt.savefig(fig_path, dpi = 400)
 plt.grid()
 if __name__ == "__main__":
     plt.show()
@@ -94,7 +94,7 @@ ax.set_zlabel("BSFC")
 ax.set_title("BSFC Surface Plot")
 fig.colorbar(surf, ax=ax, shrink=0.6)
 fig_path = os.path.join(FIGS_PATH, "BSFC_3d.png")
-plt.savefig(fig_path, dpi = 600)
+plt.savefig(fig_path, dpi = 400)
 if __name__ == "__main__":
     plt.show()
 
@@ -129,7 +129,7 @@ ax.set_zlabel("J_ss")
 ax.set_title("J_ss Surface Plot")
 fig.colorbar(surf, ax=ax, shrink=0.6)
 fig_path = os.path.join(FIGS_PATH, "Jss_3d.png")
-plt.savefig(fig_path, dpi = 600)
+plt.savefig(fig_path, dpi = 400)
 plt.show()
 
 
@@ -210,7 +210,7 @@ plt.grid()
 plt.legend()
 
 fig_path = os.path.join(FIGS_PATH, "Validation_Sim_1_Flat_Road.png")
-plt.savefig(fig_path, dpi = 600)
+plt.savefig(fig_path, dpi = 400)
 
 if __name__ == "__main__":
     plt.show()
@@ -246,6 +246,6 @@ plt.grid()
 plt.legend()
 
 fig_path = os.path.join(FIGS_PATH, "Validation_Sim_2_Hilly_Road.png")
-plt.savefig(fig_path, dpi = 600)
+plt.savefig(fig_path, dpi = 400)
 if __name__ == "__main__":
     plt.show()

@@ -57,6 +57,9 @@ step(precomp*cltf_outer)
 theme("light")
 saveas(gcf, "T3_lin_step.jpg")
 
+si = stepinfo(precomp*cltf_outer, "SettlingTimeThreshold", 0.01, ...
+    "RiseTimeLimits", [0, 0.95])
+
 
 figure
 margin(Controller_outer * P_outer)

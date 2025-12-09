@@ -96,7 +96,7 @@ def plot_lin_analisis(v0 = 27.78, step_size = 1, sim_length = 150, step_time = 5
     plt.ylabel("Delta V (m/s)")
 
     fig_path = os.path.join(FIGS_PATH, f"t2_Linsim_step{step_size}_v0{round(v0)}.png")
-    plt.savefig(fig_path, dpi = 600)
+    plt.savefig(fig_path, dpi = 400)
 
     if __name__ == "__main__":
         plt.show()
@@ -171,7 +171,7 @@ def simulate_step_response(Kp, Ki, Kaw, v_start, v_target, plot_title, filename,
 
         plt.tight_layout()
         save_path = os.path.join(FIGS_PATH, filename)
-        plt.savefig(save_path, dpi = 600)
+        plt.savefig(save_path, dpi = 400)
         plt.show()
 
     return total_fuel

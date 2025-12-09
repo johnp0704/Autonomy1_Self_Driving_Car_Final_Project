@@ -76,7 +76,7 @@ plt.ylabel('Yaw angle (rad)')
 plt.title('Nonlinear vs Linear Yaw Response')
 plt.legend()
 fig_path = os.path.join(FIGS_PATH, 'Task3_Linearization_Yaw')
-plt.savefig(fig_path, dpi = 600)
+plt.savefig(fig_path, dpi = 400)
 plt.grid() 
 plt.show()
 
@@ -88,7 +88,7 @@ plt.ylabel('Lateral Position y (m)')
 plt.title('Nonlinear vs Linear Lateral Response')
 plt.legend()
 fig_path = os.path.join(FIGS_PATH, 'Task3_Linearization_Position')
-plt.savefig(fig_path, dpi = 600)
+plt.savefig(fig_path, dpi = 400)
 plt.grid()
 plt.show()
 
@@ -99,7 +99,7 @@ plt.xlabel('Time (s)')
 plt.title('Errors')
 plt.legend()
 fig_path = os.path.join(FIGS_PATH, 'Task3_Linearization_Errors')
-plt.savefig(fig_path, dpi = 600)
+plt.savefig(fig_path, dpi = 400)
 plt.grid()
 plt.show()
 
@@ -174,7 +174,7 @@ def simulate_step_response(y_start, y_target, plot_title, filename, road_amp=0.0
             desired_y = y_target
         ref_data[i] = desired_y
 
-        delta, _ = y_controller.update(desired_y, car_task3.y, car_task3.phi)
+        delta = y_controller.update(desired_y, car_task3.y, car_task3.phi)
         delta_list[i] = delta
 
         # Using car class update
@@ -192,14 +192,15 @@ def simulate_step_response(y_start, y_target, plot_title, filename, road_amp=0.0
         plt.title(plot_title)
         plt.xlabel('Time (s)')
         plt.ylabel('y Posiiton (m)')
+        plt.xlim([0,8])
         plt.legend()
         plt.grid(True)
 
         plt.tight_layout()
         save_path = os.path.join(FIGS_PATH, filename)
-        plt.savefig(save_path, dpi = 600)
+        plt.savefig(save_path, dpi = 400)
         plt.show()
 
         
 for y_ref in y_ref_list:
-        simulate_step_response(y_start=0, y_target=y_ref, plot_title=f'Y Step Simulation (y_ref={y_ref})', filename=f"ystep_sim_yref_{int(y_ref)}.png", road_amp=0.0)
+        simulate_step_response(y_start=0, y_target=y_ref, plot_title=f'Y Step Simulation (y_ref={y_ref})', filename=f"T3_ystep_sim_yref_{int(y_ref)}.png", road_amp=0.0)
