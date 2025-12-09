@@ -160,7 +160,6 @@ def simulate(car_obj, Fd_func, duration=150, grade = None, x = None):
         if len(mpg_log) > 0: #skip if on first test
             pass
 
-        F_max = car_obj.F_max_force
         F_sat_log = np.clip(Fd_input, car_obj.fd_min, car_obj.F_max_force)
 
         Ne_log = (60/(2*np.pi)) * (car_obj.eta_g * car_obj.eta_d / car_obj.rw) * speed
@@ -224,8 +223,6 @@ sim_beta_deg = Amp * np.sin(2*np.pi/1000*sim_x + 300)
 sim_beta_deg[(sim_x < 500) & (sim_beta_deg < 0)] = 0 #flatten
 sim_beta_rad = np.deg2rad(sim_beta_deg)
 
-# car_2.road_x = sim_x #match axis
-# car_2.road_beta = sim_beta_rad
 
 def const_force(t):
     return F_eq_val
