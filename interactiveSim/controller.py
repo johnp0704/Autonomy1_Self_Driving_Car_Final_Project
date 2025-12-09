@@ -112,7 +112,13 @@ class Controller:
     LANE_DIFF_LATERAL_READING = 45 # The reading when a car is in another lane
     LAT_READING_CONVERSION_FACTOR = (2*LANE_MIDPOINT_OFFSET)/LANE_DIFF_LATERAL_READING # Conversion factor for other car rel y to meters
 
-    # Ts: sample time of the controller;
+    # Safety params
+    FOLLOWING_TIME_S = 6.0   # seconds headway to consider for passing
+    MIN_ABS_GAP_M = 12.0     # absolute min gap (m) that triggers immediate evasive lane change if possible
+    SAFETY_MIN_GAP_PRED = 16.0 # safety gap used for MPC predictions (kept in sync with MPC settings)
+
+
+        # Ts: sample time of the controller;
     # initial_conditions: two element vector representing the equilibrium 
     # i.e., [equilibrium of driving force Fd, equilibrium of vehicle speed]
     def __init__(self, Ts, initial_conditions):
@@ -139,22 +145,24 @@ class Controller:
 
         
 
-    def time_to_impact(self, rel_x, rel_speed, car_anticipate_right_lane, npc_in_right_lane):
-        
-        # Check if we anticipate being in the same lane as the other car
-        if car_anticipate_right_lane != npc_in_right_lane:
-            #ignore
+    def time_to_impact(self, rel_x, rel_speed):
+        # rel_x: positive if other car is ahead
+        # rel_speed = other_speed - ego_speed
+        # We only care if we are closing (rel_speed < 0), i.e., other is slower than us
+        if rel_speed >= -0.01:  # not closing (or nearly zero)
             return None
-        
-        else:
-            # same lane, check if other car is faster
-            if rel_speed >= 0 or rel_x < 0:
-                return None
-            return abs(rel_x/rel_speed)
+
+        # avoid divide-by-zero and extremely large times due to tiny rel_speed
+        safe_rel_speed = abs(rel_speed)
+        if safe_rel_speed < 0.1:
+            # treat as "not imminently closing" (will rely on absolute gap)
+            return None
+
+        return abs(rel_x / rel_speed)
     
 
     def state_machine(self, y, other_cars, desired_speed, speed):
-        FOLLOWING_DISTANCE = 6 #sec
+        FOLLOWING_DISTANCE = self.FOLLOWING_TIME_S # sec
         MIN_VERT_FOR_LANE_CHANGE = 11 # meters
         
         #init return, desired_speed defaults to input value
@@ -162,7 +170,7 @@ class Controller:
         anticipated_lane_right = None
 
         # -------------------------------------- Check if car needs to finish lane change --------------------------
-                # Check if a previously started lane change was completed if not complte that turn first
+        # Check if a previously started lane change was completed if not complete that turn first
         if (((self.state == States.MOVING_RIGHT) and (y > self.LANE_THRESH))       # Arrived in right lane
             or ((self.state == States.MOVING_LEFT) and (y < -self.LANE_THRESH))):  # Arrived in left lane
             
@@ -179,7 +187,7 @@ class Controller:
             return desired_y, desired_speed
 
 
-        # Check if we are in the right lane and going straight, or if we are moving to it.
+        # Determine which lane we are anticipating being in for planning
         if (self.state == States.MOVING_RIGHT) or ((y >= self.LANE_THRESH)
                                                    and (self.state == States.STRAIGHT)):
             anticipated_lane_right = True
@@ -187,8 +195,8 @@ class Controller:
                                                    and (self.state == States.STRAIGHT)):
             anticipated_lane_right = False
         else:
-            print("Lane determining error")
-
+            # fallback
+            anticipated_lane_right = (y >= 0)
 
 
 
@@ -207,27 +215,31 @@ class Controller:
             if rel_x < -MIN_VERT_FOR_LANE_CHANGE:
                 continue
 
-
             rel_y = npc_car[1] * self.LAT_READING_CONVERSION_FACTOR
-            rel_speed = npc_car[2]
+            rel_speed = npc_car[2]  # this is other.speed - ego.speed
             abs_y = y + rel_y
 
-            # Find which lane the NPC car is in
+            # Only consider cars that are in approximate lane center (left/right)
             if abs_y > self.LANE_THRESH:
                 # In right lane
-                cars_right_lane.append((rel_x, rel_speed, self.time_to_impact(rel_x, rel_speed, anticipated_lane_right, True))) # Last param is antsipate car in right lane
+                tti = self.time_to_impact(rel_x, rel_speed)
+                cars_right_lane.append((rel_x, rel_speed, tti))
 
             elif abs_y < -self.LANE_THRESH:
                 # In left lane
-                cars_left_lane.append((rel_x, rel_speed, self.time_to_impact(rel_x, rel_speed, anticipated_lane_right, False))) # False for car in left lane
+                tti = self.time_to_impact(rel_x, rel_speed)
+                cars_left_lane.append((rel_x, rel_speed, tti))
 
             else:
-                print("NPC CAR LANE LOCATION ERROR")
+                # treat as in same lane - consider for immediate safety
+                tti = self.time_to_impact(rel_x, rel_speed)
+                # place it in the closer lane list (based on sign of rel_y)
+                if rel_y >= 0:
+                    cars_right_lane.append((rel_x, rel_speed, tti))
+                else:
+                    cars_left_lane.append((rel_x, rel_speed, tti))
             
             # print(f"Car Y: {y:<6.2f}| Rel x: {npc_car[0]:<6.2f}| Rel y: {npc_car[1]* self.LAT_READING_CONVERSION_FACTOR:<6.2f}| rel speed: {npc_car[2]:<6.2f}| LL car #: {len(cars_left_lane)}| RL car #: {len(cars_right_lane)}")
-
-
-
 
 
 
@@ -238,57 +250,61 @@ class Controller:
         # Check for impending collision:
         closest_impact_time = None
 
-        # In Right lane
+        # Utility to find min tti and min absolute gap in a list
+        def analyze_lane_list(lst):
+            min_tti = None
+            min_gap = None
+            for (rx, rs, tti) in lst:
+                if min_gap is None or rx < min_gap:
+                    min_gap = rx
+                if tti is not None:
+                    if min_tti is None or tti < min_tti:
+                        min_tti = tti
+            return min_gap, min_tti
+
+        right_min_gap, right_min_tti = analyze_lane_list(cars_right_lane)
+        left_min_gap, left_min_tti = analyze_lane_list(cars_left_lane)
+
+        # Safety checks use absolute gap first (immediate)
+        # When anticipating moving right:
         if anticipated_lane_right:
-            for NPC_car in cars_right_lane:
-                time_to_impact = NPC_car[2]
-                rel_speed = NPC_car[1]
+            # If immediate right lane car is dangerously close, try to move left (if free)
+            if right_min_gap is not None and right_min_gap < self.MIN_ABS_GAP_M and not cars_left_lane:
+                self.state = States.MOVING_LEFT
+                # immediate return: start moving now
+                desired_y = -self.LANE_MIDPOINT_OFFSET
+                return desired_y, desired_speed
 
-                #TODO check why not passing when left lane seems clear
-                if time_to_impact is not None and not cars_left_lane:
-                    if (time_to_impact < FOLLOWING_DISTANCE):
-                        self.state = States.MOVING_LEFT
-                        print("moving left to pass")
-                    
+            # Otherwise check time-to-impact for cars ahead in our lane
+            if right_min_tti is not None and (right_min_tti < FOLLOWING_DISTANCE):
+                # If left lane is clear, pass
+                if not cars_left_lane:
+                    self.state = States.MOVING_LEFT
                 else:
-                    # Other lane not safe — need to slow down
-                    if time_to_impact is not None:
-                        if (closest_impact_time is None) or (time_to_impact < closest_impact_time):
-                            if time_to_impact < FOLLOWING_DISTANCE:
-                                desired_speed = speed + rel_speed
-                                closest_impact_time = time_to_impact
-
-
-
-
-        #in left lane        
+                    # slow down to match leader speed (use rel_speed of closest)
+                    # pick the minimal tti occuring car to compute rel_speed
+                    # find that car
+                    min_tti = right_min_tti
+                    for (rx, rs, tti) in cars_right_lane:
+                        if tti == min_tti:
+                            desired_speed = speed + rs
+                            break
         else:
-            
-            # always try to get out of passing lane
-            if not cars_right_lane:
+            # anticipating left lane
+            if left_min_gap is not None and left_min_gap < self.MIN_ABS_GAP_M and not cars_right_lane:
                 self.state = States.MOVING_RIGHT
-                print("returning to regular lane from passing lane")
+                desired_y = self.LANE_MIDPOINT_OFFSET
+                return desired_y, desired_speed
 
-
-
-            for NPC_car in cars_left_lane:
-                time_to_impact = NPC_car[2]
-                rel_speed = NPC_car[1]
-
-                # Check if we are headed to crash and if right lane is clear
-                if time_to_impact is not None and not cars_right_lane:
-                    if (time_to_impact < FOLLOWING_DISTANCE):
-                        self.state = States.MOVING_RIGHT
-                        print("moving right to pass")
-                    
+            if left_min_tti is not None and (left_min_tti < FOLLOWING_DISTANCE):
+                if not cars_right_lane:
+                    self.state = States.MOVING_RIGHT
                 else:
-                    # Other lane not safe need to slow down
-                    if closest_impact_time is not None and closest_impact_time > time_to_impact:
-                        if (time_to_impact < FOLLOWING_DISTANCE):
-                            desired_speed = speed + rel_speed
-                            closest_impact_time = time_to_impact
-                
-
+                    min_tti = left_min_tti
+                    for (rx, rs, tti) in cars_left_lane:
+                        if tti == min_tti:
+                            desired_speed = speed + rs
+                            break
 
         # find the desired y from desired lane movement
         if (self.state == States.MOVING_LEFT):
@@ -314,27 +330,26 @@ class Controller:
     # grade is a road grade object. Use grade.grade_at to find the road grade at any x
     def update(self, speed, x, y, phi, desired_speed, des_lane, other_cars, grade):
 
-        #TODO optimization based fuel speed control up here. It will be passed into the section below to make sure that it stays safe
-
-
         self.desired_y = des_lane * 11.25 # dist from center to lane
         self.vdes = desired_speed
 
-        # Todo path planning
+        # Path planning & lane-change decision
+        # NOTE: state_machine uses current 'speed' and raw other_cars (not affected by MPC)
         self.desired_y, desired_speed = self.state_machine(y, other_cars, desired_speed, speed)
 
-
+        # Steering command
         self.delta_cmd= self.y_controller.update(self.desired_y, y, phi)
 
-        #Fuel optimization MPC
-        # v_driver = desired_speed
-        # v_des_opt = mpc_select_v_des(x, speed, grade, other_cars, v_driver)
-        # v_des_opt = min(v_des_opt, desired_speed) #ensure to keep safe distances
-        # self.last_v_des_opt = v_des_opt
+        # Fuel optimization MPC (performance). MPC must NOT be allowed to override safety decisions.
+        v_driver = desired_speed
+        # For extra safety, pass MPC a safety_gap value consistent with controller settings
+        v_des_opt = mpc_select_v_des(x, speed, grade, other_cars, v_driver, safety_gap_min=self.SAFETY_MIN_GAP_PRED)
+        # Never go faster than what the planner suggested; MPC may suggest slower speeds for fuel saving,
+        # but safety & lane decisions are controlled above.
+        v_des_opt = min(v_des_opt, desired_speed)
+        self.last_v_des_opt = v_des_opt
 
-        self.Fd_cmd = self.v_controller.update(desired_speed, speed) #desired_speed without MPC, v_des_opt with MPC
+        # Final throttle command
+        self.Fd_cmd = self.v_controller.update(desired_speed, speed) #use (desired_speed, speed) for no MPC, (v_des_opt, speed) for MPC 
 
-        #self.Fd_cmd = self.v_controller.update(desired_speed, speed) #used before fuel optimization)
-        
         return self.Fd_cmd, self.delta_cmd
-    
