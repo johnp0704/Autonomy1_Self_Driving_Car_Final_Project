@@ -113,15 +113,15 @@ t_resp, y = ct.step_response(T_final, T=t)
 y_final = y[-1]
 y_max = np.max(y)
 
-# Overshoot
+#overshoot
 overshoot = max(0, (y_max - y_final) / y_final * 100)
 
-# Rise time 10–90%
+#rise time 10–90%
 t_10 = np.where(y >= 0.1 * y_final)[0][0]
 t_90 = np.where(y >= 0.9 * y_final)[0][0]
 rise_time = t_resp[t_90] - t_resp[t_10]
 
-# Settling time (2%)
+#settling time 2%
 upper = 1.02 * y_final
 lower = 0.98 * y_final
 outside = (y > upper) | (y < lower)
@@ -131,14 +131,14 @@ if np.any(outside):
 else:
     settling_time = 0
 
-# --- Print Metrics ---
+#metrics
 print(f'\nPerformance Metrics:')
 print(f'Final Value: {y_final:.4f}')
 print(f'Overshoot: {overshoot:.2f}%')
 print(f'Rise Time: {rise_time:.4f} s')
 print(f'Settling Time: {settling_time:.4f} s')
 
-# --- Plot Step Response ---
+#step response
 plt.figure()
 plt.plot(t_resp, y)
 plt.axhline(1.0, color='r', linestyle='--', label='Reference')

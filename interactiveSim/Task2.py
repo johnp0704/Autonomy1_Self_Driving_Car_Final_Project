@@ -89,7 +89,7 @@ def plot_lin_analisis(v0_sim = 27.78, v0_lin = None, step_size = 1, sim_length =
     plt.xlabel("Time (s)")
     plt.ylabel("Speed (m/s)")
 
-    fig_path = os.path.join(FIGS_PATH, f"t2_Linsim_step{step_size}_v0{round(v0)}.png")
+    fig_path = os.path.join(FIGS_PATH, f"t2_Linsim_step{step_size}_v0{round(v0_lin)}.png")
     plt.savefig(fig_path, dpi = 400)
 
     if __name__ == "__main__":
