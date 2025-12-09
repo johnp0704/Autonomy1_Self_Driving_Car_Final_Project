@@ -106,9 +106,8 @@ class Y_controller:
 
 
 class Controller:
-
-    # Lane geometry constants
-    LANE_MIDPOINT_OFFSET = 11.25   # center of lane in meters
+    #lane geometry constants
+    LANE_MIDPOINT_OFFSET = 11.25   #center of lane in meters
 
     def __init__(self, Ts, initial_conditions):
         self.Ts = Ts
@@ -129,37 +128,13 @@ class Controller:
 
         self.y_controller = Y_controller()
 
-        # For compatibility with external plotting (not really used now)
         self.last_v_des_opt = 0.0
 
     def update(self, speed, x, y, phi, desired_speed, des_lane, other_cars, grade):
-        """
-        Simplified update method:
-        - No autonomous lane-change logic
-        - No MPC fuel optimization
-        - Pure PI speed control + lateral control
-        """
-
-        # ------------------------------------------------------------
-        # 1. Use desired_speed directly (no MPC alteration)
-        # ------------------------------------------------------------
         v_des = desired_speed
-        self.last_v_des_opt = v_des  # maintain compatibility
-
-        # ------------------------------------------------------------
-        # 2. Convert lane command to desired lateral position
-        #    des_lane = +1 (right lane), -1 (left lane)
-        # ------------------------------------------------------------
+        self.last_v_des_opt = v_des
         desired_y = des_lane * self.LANE_MIDPOINT_OFFSET
-
-        # ------------------------------------------------------------
-        # 3. Lateral control (Y_controller)
-        # ------------------------------------------------------------
         delta_cmd = self.y_controller.update(desired_y, y, phi)
-
-        # ------------------------------------------------------------
-        # 4. Longitudinal control (V_controller)
-        # ------------------------------------------------------------
         Fd_cmd = self.v_controller.update(v_des, speed)
 
         return Fd_cmd, delta_cmd
